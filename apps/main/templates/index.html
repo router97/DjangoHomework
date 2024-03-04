@@ -1,56 +1,22 @@
 {% extends 'main.html' %}
 
 {% block content %}
+
 {% load static %}
-
 <div class="container">
-
-  <h1>Blog</h1>
-  <p>Amount: {{articles|length}}</p>
-
-  <form action = "{% url 'blog:add-article' %}">
-    <button type="submit" class="btn btn-secondary">Create article</button>
-  </form>
-
-  <hr class="my-4">
-
-  <div class="row g-4">
-    {% for article in articles %}
-    <div class="col-4">
-      <div class="card">
-
-        <a href="{% url 'blog:article' article.id %}" class="text-decoration-none text-white">
-
-        <img src="{{ article.image.url }}" alt="Article Image">
-
-      
-
-
-        <div class = 'card-body'>
-          <h5 class = 'card-title'>{{ article.title }}</h5>
-          <small class="text-muted">{{article.created_at|timesince}}</small>
-        </div>
-
-        </a>
-        
-        <div class="card-footer">
-          <div class="d-flex justify-content-between text-center">
-              <h5><span class="badge">👁️ {{article.views}}</span></h5>
-              <a href = {% url 'blog:like' article.id %}><h5><span = class="btn" id="btn_like_{{article.id}}" style="cursor: pointer;">👍 {{article.likes}}</span></h5></a>
-          </div>
-        </div>
-
-      </div>
+    <h1>Blog</h1>
+    <p>Amount: {{ articles|length }}</p>
+    <form action={% url "blog:add-article" %}>
+        <button type="submit" class="btn btn-secondary">Create article</button>
+    </form>
+    <hr class="my-4">
+    <div class="row g-4">
+        {% for article in articles %}
+            {% include 'article_card.html' with article=article %}
+        {% empty %}
+        <h2>No articles</h2>
+        {% endfor %}
     </div>
-  
-
-    {% empty %}
-  
-    <h2>No articles</h2>
-
-    {% endfor %}
-  </div>
-
 </div>
 
 {% endblock content %}

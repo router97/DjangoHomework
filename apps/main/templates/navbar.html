@@ -1,46 +1,28 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
-
-  <div class="container">
-
-    <a class="navbar-brand" href = "{% url 'main:index' %}"><img src="{% url 'main:favicon' %}" alt="Logo" height = 50 width = 50></img>DjangoHomework</a>
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        
-        {% comment %} <li class="nav-item {% if request.path == '/' %}active{% endif %}">
-          <a class="nav-link" href="{% url 'main:index' %}">Home</a>
-        </li> {% endcomment %}
-
-        <li class="nav-item">
-          <a class="nav-link" href = "{% url 'admin:index' %}">Admin</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href = "{% url 'main:about' %}">About</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href = "{% url 'main:contacts' %}">Contacts</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href = "{% url 'main:sigma' %}">Sigma</a>
-        </li>
-
-      </ul>
-      
-      {% comment %} <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form> {% endcomment %}
-
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'main:index' %}"><img src="{% url 'main:favicon' %}" alt="Logo" height=50 width=50></img>DjangoHomework</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href={% url "admin:index" %}>Admin</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href={% url "main:about" %}>About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href={% url "main:contacts" %}>Contacts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href={% url "main:sigma" %}>Sigma</a>
+                </li>
+            </ul>
+            {% comment %} <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form> {% endcomment %}
+        </div>
     </div>
-    
-  </div>
-
 </nav>
