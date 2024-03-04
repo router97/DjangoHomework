@@ -1,14 +1,14 @@
 from django.shortcuts import render, HttpResponse
 from django.conf import settings
 from django.http import HttpRequest, FileResponse
+from ..blog.models import Article
 
 def favicon(request: HttpRequest) -> FileResponse:
-    print('asking for fav')
     file = (settings.BASE_DIR / "static" / "favicon.svg").open("rb")
     return FileResponse(file)
 
 def index(request: HttpRequest) -> HttpResponse:
-    context = {}
+    context = {'articles': list(Article.objects.all())}
     return render(request, 'index.html', context)
 
 def about(request: HttpRequest) -> HttpResponse:

@@ -1,15 +1,76 @@
 {% extends 'main.html' %}
 
 {% block content %}
+{% load static %}
 
 <div class="container">
-  <h1>Hello, world!</h1>
-  <p>My first Bootstrap page.</p>
-  <div class="mt-4 rounded-3 bg-body-tertiary p-4">
-    <h3>А Зум вже не запустився</h3>
-    <p>Бонуса немає </p>
-    <p>Що робити?</p>
+
+  <h1>Blog</h1>
+  <p>Amount: {{articles|length}}</p>
+
+  <form action = "{% url 'blog:add-article' %}">
+    <button type="submit" class="btn btn-primary">Create article</button>
+  </form>
+
+  <hr class="my-4">
+
+  <div class="row g-4">
+    {% for article in articles %}
+    <div class="col-4">
+      <div class="card">
+
+        <a href="{% url 'blog:article' article.id %}" class="text-decoration-none text-white">
+
+        <img src="{{ article.image.url }}" alt="Article Image">
+
+      
+
+
+        <div class = 'card-body'>
+          <h5 class = 'card-title'>{{ article.title }}</h5>
+          <small class="text-muted">{{article.created_at|timesince}}</small>
+        </div>
+
+        </a>
+        
+        <div class="card-footer">
+          <div class="d-flex justify-content-between text-center">
+              <h5><span class="badge">👁️ {{article.views}}</span></h5>
+              <h5><span class="btn" id="btn_like_{{article.id}}" style="cursor: pointer;">👍 {{article.likes}}</span></h5>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  
+
+    {% empty %}
+  
+    <h2>No articles</h2>
+
+    {% endfor %}
   </div>
+
 </div>
+
+
+<script>
+    
+  function like(article_id){
+    fetch('{% url "blog:like" 0 %}'.replace('0', article_id))
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('btn_like_' + article_id).innerText = `👍 ${data.likes}`;
+    })
+  }
+
+  {% for article in articles %}
+    document.getElementById('btn_like_{{article.id}}').addEventListener('click', function(){
+        like({{article.id}});
+    });
+  {% endfor %}
+
+</script>
+
 
 {% endblock content %}
