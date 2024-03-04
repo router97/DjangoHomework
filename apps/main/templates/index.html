@@ -53,24 +53,4 @@
 
 </div>
 
-
-{% comment %} <script>
-    
-  function like(article_id){
-    fetch('{% url "blog:like" 0 %}'.replace('0', article_id))
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('btn_like_' + article_id).innerText = `👍 ${data.likes}`;
-    })
-  }
-
-  {% for article in articles %}
-    document.getElementById('btn_like_{{article.id}}').addEventListener('click', function(){
-        like({{article.id}});
-    });
-  {% endfor %}
-
-</script> {% endcomment %}
-
-
 {% endblock content %}

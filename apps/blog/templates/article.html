@@ -13,7 +13,7 @@
     <p>{{ article.content }}</p>
     <div class="d-flex justify-content-start">
       <h5><span class="badge">👁️ {{article.views}}</span></h5>
-      <h5><span class="btn" id="btn_like_{{article.id}}" style="cursor: pointer;">👍 {{article.likes}}</span></h5>
+      <a href = {% url 'blog:like' article.id %}><h5><span = class="btn" id="btn_like_{{article.id}}" style="cursor: pointer;">👍 {{article.likes}}</span></h5></a>
     </div>
   </div>
 

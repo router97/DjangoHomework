@@ -27,5 +27,6 @@ def like(request: HttpRequest, article_id: int):
     article.likes += 1
     article.save()
     
-    next = request.GET.get('next', '/')
-    return HttpResponseRedirect(next)
+    next_url = request.META.get('HTTP_REFERER', '/')
+    
+    return redirect(next_url)
