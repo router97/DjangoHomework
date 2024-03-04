@@ -26,4 +26,6 @@ def like(request: HttpRequest, article_id: int):
     article = get_object_or_404(Article, id=article_id)
     article.likes += 1
     article.save()
-    return JsonResponse({'likes': article.likes})
+    
+    next = request.GET.get('next', '/')
+    return HttpResponseRedirect(next)

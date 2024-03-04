@@ -36,7 +36,7 @@
         <div class="card-footer">
           <div class="d-flex justify-content-between text-center">
               <h5><span class="badge">👁️ {{article.views}}</span></h5>
-              <h5><span class="btn" id="btn_like_{{article.id}}" style="cursor: pointer;">👍 {{article.likes}}</span></h5>
+              <a href = {% url 'blog:like' article.id %}><h5><span = class="btn" id="btn_like_{{article.id}}" style="cursor: pointer;">👍 {{article.likes}}</span></h5></a>
           </div>
         </div>
 
@@ -54,7 +54,7 @@
 </div>
 
 
-<script>
+{% comment %} <script>
     
   function like(article_id){
     fetch('{% url "blog:like" 0 %}'.replace('0', article_id))
@@ -70,7 +70,7 @@
     });
   {% endfor %}
 
-</script>
+</script> {% endcomment %}
 
 
 {% endblock content %}
