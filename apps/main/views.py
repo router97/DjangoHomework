@@ -8,7 +8,8 @@ def favicon(request: HttpRequest) -> FileResponse:
     return FileResponse(file)
 
 def index(request: HttpRequest) -> HttpResponse:
-    context = {'articles': list(Article.objects.all())}
+    articles = Article.objects.all()
+    context = {'articles': articles}
     return render(request, 'index.html', context)
 
 def about(request: HttpRequest) -> HttpResponse:

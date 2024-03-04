@@ -3,20 +3,17 @@
 {% block content %}
 
 <div class="container">
-
-  <div class="mt-4 rounded-3 bg-body-tertiary p-4">
-    <h1 align="center">{{ article.title }}</h1>
-    <img src="{{ article.image.url }}" class="rounded mx-auto d-block" alt="Article Image">
-    <p align = 'center' class="font-weight-light">By Ryan Gosling</p>
-    
-    <hr class="my-4">
-    <p>{{ article.content }}</p>
-    <div class="d-flex justify-content-start">
-      <h5><span class="badge">👁️ {{article.views}}</span></h5>
-      <a href = {% url 'blog:like' article.id %}><h5><span = class="btn" id="btn_like_{{article.id}}" style="cursor: pointer;">👍 {{article.likes}}</span></h5></a>
+    <div class="mt-4 rounded-3 bg-body-tertiary p-4">
+        <h1 align="center">{{ article.title }}</h1>
+        <img src="{{ article.image.url }}" class="rounded mx-auto d-block" alt="Article Image">
+        <p align="center" class="font-weight-light">By Ryan Gosling</p>
+        <hr class="my-4">
+        <p>{{ article.content }}</p>
+        <div class="d-flex justify-content-start">
+            <h5><span class="badge">👁️ {{ article.views }}</span></h5>
+            <a href={% url 'blog:like' article.id %}><h5><span class="btn" id="btn_like_{{ article.id }}" style="cursor: pointer;">👍 {{ article.likes }}</span></h5></a>
+        </div>
     </div>
-  </div>
-
 </div>
 
 {% endblock content %}
