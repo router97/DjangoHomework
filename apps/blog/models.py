@@ -8,6 +8,7 @@ class Article(models.Model):
     
     views = models.IntegerField(verbose_name = 'Views', default = 0, editable = False, auto_created = True)
     likes = models.IntegerField(verbose_name = 'Likes', default = 0, editable = False, auto_created = True)
+    dislikes = models.IntegerField(verbose_name = 'Dislikes', default = 0, editable = False, auto_created = True)
     
     created_at = models.DateTimeField(verbose_name = 'Created at', auto_now_add = True)
     edited_at = models.DateTimeField(verbose_name = 'Edited at', auto_now = True)
