@@ -2,12 +2,24 @@
 
 {% block content %}
 
-<div class="container">
+<div class="container" id="article-form-container">
     <div class="mt-4 rounded-3 bg-body-tertiary p-4">
-        <form method="POST" action="" enctype="multipart/form-data">
+        <form method="POST" action="" enctype="multipart/form-data" id="article-form">
             {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" class="btn btn-primary" value="Submit"/>
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for={{ field.id }}>{{ field.label_tag }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="invalid-feedback">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                No fields, somehow..
+            {% endfor %}
+
+            <input type="submit" class="btn btn-success" value="Submit">
         </form>
     </div>
 </div>
