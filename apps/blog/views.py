@@ -27,3 +27,10 @@ def like(request: HttpRequest, article_id: int):
     article.save()
     next_url = request.META.get('HTTP_REFERER', '/')
     return redirect(next_url)
+
+def dislike(request: HttpRequest, article_id: int):
+    article = get_object_or_404(Article, id=article_id)
+    article.dislikes += 1
+    article.save()
+    next_url = request.META.get('HTTP_REFERER', '/')
+    return redirect(next_url)

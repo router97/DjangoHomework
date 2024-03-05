@@ -9,9 +9,24 @@
         <p align="center" class="font-weight-light">By Ryan Gosling</p>
         <hr class="my-4">
         <p>{{ article.content }}</p>
-        <div class="d-flex justify-content-start">
-            <h5><span class="badge">👁️ {{ article.views }}</span></h5>
-            <a href={% url 'blog:like' article.id %}><h5><span class="btn" id="btn_like_{{ article.id }}" style="cursor: pointer;">👍 {{ article.likes }}</span></h5></a>
+        <div class="d-flex justify-content-start align-items-center">
+            <div>
+                <span class="badge">👁️ {{ article.views }}</span>
+            </div>
+
+            <div>
+                <a href={% url "blog:like" article.id %} class="text-decoration-none">
+                    <span class="btn" id="btn_like_{{ article.id }}" style="cursor: pointer;">
+                        👍 {{ article.likes }}
+                    </span>
+                </a>
+
+                <a href={% url 'blog:dislike' article.id %} class="text-decoration-none">
+                    <span class="btn" id="btn-dislike-{{ article.id }}" style="cursor: pointer;">
+                        👎 {{ article.dislikes }}
+                    </span>
+                </a>     
+            </div>   
         </div>
     </div>
 </div>
