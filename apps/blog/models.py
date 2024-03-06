@@ -36,4 +36,4 @@ class Comment(models.Model):
     class Meta:
         verbose_name = 'Comment'
         verbose_name_plural = 'Comments'
-        ordering = ['likes']
+        ordering = ['-likes']

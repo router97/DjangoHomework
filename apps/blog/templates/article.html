@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="row g-4" id="comments">
             {% for comment in article.comments.all %}
                 {% include "comment_card.html" with comment=comment %}
             {% empty %}

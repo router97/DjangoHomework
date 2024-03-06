@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.http import HttpRequest
-from .models import Article
+from .models import Article, Comment
 from .forms import ArticleForm, CommentForm
 
 def article(request: HttpRequest, id: int) -> HttpResponse:
@@ -48,5 +48,12 @@ def dislike(request: HttpRequest, article_id: int):
     article = get_object_or_404(Article, id=article_id)
     article.dislikes += 1
     article.save()
+    next_url = request.META.get('HTTP_REFERER', '/')
+    return redirect(next_url)
+
+def like_comment(request: HttpRequest, comment_id: int):
+    comment = get_object_or_404(Comment, id=comment_id)
+    comment.likes += 1
+    comment.save()
     next_url = request.META.get('HTTP_REFERER', '/')
     return redirect(next_url)

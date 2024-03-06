@@ -1,7 +1,9 @@
+
 <div class="col-4">
     <div class="card" id="article-card-{{ article.id }}">
         <a href={% url "blog:article" article.id %} class="text-decoration-none text-white">
             <img class="card-img-top" src="{{ article.image.url }}" alt="Article Image">
+            <!-- class="card-img-overlay" -->
             <div class="card-body" id="article-card-{{article.id}}-body">
                 <h5 class="card-title">{{ article.title }}</h5>
                 <p class="card-text">
