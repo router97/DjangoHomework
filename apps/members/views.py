@@ -1,7 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
+from django.urls import reverse
 from django.http import HttpRequest
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth import authenticate, login, logout
+from .forms import ProfileForm
 
 def login_view(request: HttpRequest):
     if request.method == 'POST':
@@ -22,8 +25,26 @@ def login_view(request: HttpRequest):
     context = {}
     return render(request, 'login.html', context)
 
+
+
 def profile_view(request: HttpRequest, username: str):
-    context = {'user_context': User.objects.get(username = username)}
+    requested_user = User.objects.get(username = username)
+    
+    context = {'user_context': requested_user}
+    
+    if request.method == 'POST' and request.user == requested_user:
+        
+        form = ProfileForm(request.POST, instance = requested_user)
+        
+        if form.is_valid():
+            form.save()
+        else:
+            return render(request, 'profile.html', context)
+        
+        context.update({'user_context': requested_user})
+        
+        return redirect(reverse('members:profile', kwargs={'username': requested_user.username}))
+        
     return render(request, 'profile.html', context)
 
 def logout_view(request: HttpRequest):

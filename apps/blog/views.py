@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 from .models import Article, Comment
+from django.contrib import messages
 from .forms import ArticleForm, CommentForm
 
 def article(request: HttpRequest, id: int) -> HttpResponse:
@@ -13,17 +15,22 @@ def article(request: HttpRequest, id: int) -> HttpResponse:
         'form_comment': form_comment}
     return render(request, 'article.html', context)
 
+@login_required
 def add_article(request: HttpRequest):
     if request.method == 'POST':
         form = ArticleForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('main:index')  
+            article = form.save(commit = False)
+            article.author = request.user
+            article.save()
+            messages.success(request, 'Created article')
+            return redirect('blog:article', id = article.id)  
     else:
         form = ArticleForm()  
     context = {'form': form}
     return render(request, 'article_form.html', context)
 
+@login_required
 def add_comment(request: HttpRequest, article_id: int):
     if request.method == 'POST':
         article = get_object_or_404(Article, id=article_id)

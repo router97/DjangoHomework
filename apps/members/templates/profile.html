@@ -3,7 +3,66 @@
 {% block content %}
 
 <div class="container">
-    <h1>{{ user_context.username }}'s Profile</h1>
+    <div class="mt-4 rounded-3 bg-body-tertiary p-4">
+        <h1>Profile</h1>
+
+        <form method="POST" id="profile-form" action="" enctype="multipart/form-data">
+            {% csrf_token %}    
+            
+            <fieldset {% if user_context != request.user %}disabled{% endif %}>
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input class="form-control" id="username" name="username" type="text" value="{{ user_context.username }}" placeholder="Username">
+                </div>
+
+                <div class="form-group">
+                    <label for="first_name">First name</label>
+                    <input class="form-control" id="first_name" name="first_name" type="text" value="{{ user_context.first_name }}" placeholder="First Name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input class="form-control" id="last_name" name="last_name" type="text" value="{{ user_context.last_name }}" placeholder="Last Name">
+                </div>
+                
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input class="form-control" id="email" name="email" type="text" value="{{ user_context.email }}" placeholder="Email">
+                </div>
+
+                <br>
+                <button class="btn btn-primary" type="submit">Update</button>
+
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mt-4 rounded-3 bg-body-tertiary p-4">
+        <h1>Articles</h1>
+        <br>
+
+        <div class="row g-4" id="articles">
+            {% if request.user != user_context %}
+
+                {% for article in user_context.articles.all %}
+                    {% include "article_card.html" with article=article %}
+                {% empty %}
+                    <p>No articles</p>
+                {% endfor %}
+            
+            {% else %}
+
+                {% for article in user_context.articles.all %}
+                    {% include "article_card.html" with article=article %}
+                {% empty %}
+                    <p>No articles</p>
+                {% endfor %}
+
+            {% endif %}
+        </div>
+    </div>
 </div>
 
 {% endblock content %}

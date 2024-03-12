@@ -1,6 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Article(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Author', related_name='articles', null=True, default=None)
     title = models.CharField(max_length = 20, verbose_name = 'Title', editable = True)
     content = models.TextField(verbose_name = 'Content', blank = True, editable = True)
     
@@ -23,9 +25,9 @@ class Article(models.Model):
 
 class Comment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name='Article', related_name='comments')
-    author = models.CharField(max_length = 20, verbose_name = 'Author', editable = True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Author', related_name='comments', null=True, default=None)
     likes = models.IntegerField(verbose_name = 'Likes', default = 0, editable = False, auto_created = True)
-    content = models.TextField(verbose_name = 'Content', blank = True, editable = True)
+    content = models.TextField(verbose_name = 'Content', editable = True)
     
     created_at = models.DateTimeField(verbose_name = 'Created at', auto_now_add = True)
     edited_at = models.DateTimeField(verbose_name = 'Edited at', auto_now = True)
