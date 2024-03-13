@@ -20,6 +20,9 @@ class Article(models.Model):
         verbose_name = 'Article'
         verbose_name_plural = 'Articles'
         ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} (@{self.author.username})"
 
 class Comment(models.Model):
     article = models.ForeignKey(Article, verbose_name='Article', on_delete=models.CASCADE, related_name='comments')
@@ -35,3 +38,6 @@ class Comment(models.Model):
         verbose_name = 'Comment'
         verbose_name_plural = 'Comments'
         ordering = ['-likes']
+    
+    def __str__(self):
+        return f'"{self.content[:20]}..." - @{self.author.username}. ({self.article.title})'

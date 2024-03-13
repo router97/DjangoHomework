@@ -27,13 +27,7 @@
                 {% include 'article_card.html' with article=article %}
             </div>
         {% empty %}
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">No articles</h5>
-                    </div>
-                </div>
-            </div>
+            <h5>No articles...</h5>
         {% endfor %}
     </div>
 </div>
