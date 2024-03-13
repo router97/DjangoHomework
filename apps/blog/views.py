@@ -12,7 +12,8 @@ def article(request: HttpRequest, id: int) -> HttpResponse:
     form_comment = CommentForm
     context = {
         'article': article,
-        'form_comment': form_comment}
+        'form_comment': form_comment
+    }
     return render(request, 'article.html', context)
 
 @login_required
@@ -31,6 +32,19 @@ def add_article(request: HttpRequest):
     return render(request, 'article_form.html', context)
 
 @login_required
+def delete_article(request: HttpRequest, id: int):
+    article = get_object_or_404(Article, id=id)
+    if request.user != article.author:
+        messages.error(request, 'You are not the author of this article')
+    else:
+        messages.success(request, f'Sucessfully deleted article "{article.title}"')
+        article.delete()
+    next_url = request.META.get('HTTP_REFERER', '/')
+    return redirect(next_url)
+    
+        
+
+@login_required
 def add_comment(request: HttpRequest, article_id: int):
     if request.method == 'POST':
         article = get_object_or_404(Article, id=article_id)
@@ -38,6 +52,7 @@ def add_comment(request: HttpRequest, article_id: int):
         if form.is_valid():
             comment = form.save(commit=False)
             comment.article = article
+            comment.author = request.user
             comment.save()
     else:
         form = CommentForm() 

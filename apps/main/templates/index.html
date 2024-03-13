@@ -21,7 +21,9 @@
     <!-- Article cards -->
     <div class="row g-4" id="articles">
         {% for article in articles %}
-            {% include 'article_card.html' with article=article %}
+            <div class="col-4">
+                {% include 'article_card.html' with article=article %}
+            </div>
         {% empty %}
             <div class="col">
                 <div class="card">

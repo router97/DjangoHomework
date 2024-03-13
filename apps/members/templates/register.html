@@ -1,0 +1,33 @@
+{% extends "main.html" %}
+
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center" id="register-form-container">
+    <div class="mt-1 rounded-3 bg-body-tertiary shadow p-5">
+        <h2 class="mb-4 text-center">Register</h2>
+
+        <form method="POST" id="register-form" action="" enctype="multipart/form-data">
+            {% csrf_token %}    
+            
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label" for="{{ field.id }}">{{ field.label_tag }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="invalid-feedback">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" type="submit">Register</button>
+            </div>
+
+            <div class="text-center mt-3">
+                <p>Already have an account? <a href="{% url 'members:login' %}">Log in here</a>.</p>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock content %}
