@@ -1,5 +1,7 @@
 {% extends 'main.html' %}
 
+{% block title %}{{ article.title }}{% endblock title %}
+
 {% block content %}
 
 <div class="container">
@@ -10,19 +12,19 @@
         <p>{{ article.content }}</p>
         <div class="d-flex justify-content-start align-items-center">
             <div>
-                <span class="badge">👁️ {{ article.views }}</span>
+                <span class="badge"><i class="bi bi-eye"></i> {{ article.views }}</span>
             </div>
 
             <div>
                 <a href={% url "blog:like" article.id %} class="text-decoration-none">
                     <span class="btn" id="btn_like_{{ article.id }}" style="cursor: pointer;">
-                        👍 {{ article.likes }}
+                        <i class="bi bi-hand-thumbs-up"></i> {{ article.likes }}
                     </span>
                 </a>
 
                 <a href={% url 'blog:dislike' article.id %} class="text-decoration-none">
                     <span class="btn" id="btn-dislike-{{ article.id }}" style="cursor: pointer;">
-                        👎 {{ article.dislikes }}
+                        <i class="bi bi-hand-thumbs-down"></i> {{ article.dislikes }}
                     </span>
                 </a>     
             </div> 

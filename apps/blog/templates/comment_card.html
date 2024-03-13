@@ -13,7 +13,7 @@
             <div>
                 <a href={% url "blog:like-comment" comment.id %} class="text-decoration-none">
                     <span class="btn" id="btn_like_{{ comment.id }}" style="cursor: pointer;">
-                        👍 {{ comment.likes }}
+                        <i class="bi bi-hand-thumbs-up"></i> {{ comment.likes }}
                     </span>
                 </a>
             </div>

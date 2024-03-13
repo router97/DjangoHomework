@@ -1,5 +1,7 @@
 {% extends "main.html" %}
 
+{% block title %}{{user_context.username}}{% endblock title %}
+
 {% block content %}
 
 <div class="container" id="profile-container">
@@ -61,7 +63,7 @@
             
             {% else %}
                 <form class="mb-4" id="add-article" action="{% url "blog:add-article" %}">
-                    <button class="btn btn-primary" type="submit">Create article</button>
+                    <button class="btn btn-primary" type="submit"><i class="bi bi-envelope-plus"></i> Create article</button>
                 </form>
                 {% for article in user_context.articles.all %}
                     <div class="col-4">

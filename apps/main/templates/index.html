@@ -1,5 +1,7 @@
 {% extends 'main.html' %}
 
+{% block title%}Blog{%endblock title%}
+
 {% block content %}
 
 {% load static %}
@@ -13,7 +15,7 @@
 
     <!-- Form to add a new article -->
     <form class="mb-4" id="add-article" action="{% url "blog:add-article" %}">
-        <button class="btn btn-primary" type="submit">Create article</button>
+        <button class="btn btn-primary" type="submit"><i class="bi bi-envelope-plus"></i> Create Article</button>
     </form>
 
     <hr class="my-4">

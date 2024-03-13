@@ -1,5 +1,7 @@
 {% extends "main.html" %}
 
+{% block title %}Register{% endblock title %}
+
 {% block content %}
 
 <div class="container d-flex justify-content-center align-items-center" id="register-form-container">
@@ -20,7 +22,7 @@
             {% endfor %}
             
             <div class="d-grid gap-2">
-                <button class="btn btn-primary" type="submit">Register</button>
+                <button class="btn btn-success" type="submit"><i class="bi bi-person-plus"></i> Register</button>
             </div>
 
             <div class="text-center mt-3">
