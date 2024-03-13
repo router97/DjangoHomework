@@ -1,33 +1,42 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary" id="navbar">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'main:index' %}"><img src="{% url 'main:favicon' %}" alt="Logo" height=50 width=50>DjangoHomework</a>
+        <a class="navbar-brand" href="{% url 'main:index' %}">
+            <img src="{% url 'main:favicon' %}" alt="Logo" height=50 width=50>
+            DjangoHomework
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href={% url "admin:index" %}>Admin</a>
+                    <a class="nav-link" href={% url "main:about" %}><i class="bi bi-info-circle"></i> About</a>
                 </li>
+                {% if request.user.is_superuser %}
                 <li class="nav-item">
-                    <a class="nav-link" href={% url "main:about" %}>About</a>
+                    <a class="nav-link" href={% url "admin:index" %}><i class="bi bi-gender-trans"></i> Admin</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href={% url "main:contacts" %}>Contacts</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href={% url "main:sigma" %}>Sigma</a>
-                </li>
+                {% endif %}
             </ul>
-            {% comment %} <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form> {% endcomment %}
-            {% if request.user.username %}
-                <a class="nav-link" href={% url "members:profile" request.user.username %}>{{ request.user.username }}</a>
-                <a class="btn btn-outline-danger" href={% url "members:logout" %}>Logout</a>
+
+            {% if request.user.is_authenticated %}
+                <ul class="navbar-nav mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href={% url "members:profile" request.user.username %}><i class="bi bi-person-circle"></i> {{ request.user.username }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-danger" href={% url "members:logout" %}><i class="bi bi-box-arrow-left"></i> Logout</a>
+                    </li>
+                </ul>
             {% else %}
-                <a class="btn btn-outline-primary" href={% url "members:login" %}>Login</a>
+                <ul class="navbar-nav mb-lg-0">
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary" href={% url "members:login" %}><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-success" href={% url "members:register" %}><i class="bi bi-person-plus"></i> Register</a>
+                    </li>
+                </ul>
             {% endif %}
         </div>
     </div>

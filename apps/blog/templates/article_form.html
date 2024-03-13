@@ -1,5 +1,7 @@
 {% extends "main.html" %}
 
+{% block title %}+Article{% endblock title %}
+
 {% block content %}
 
 <div class="container" id="article-form-container">
@@ -15,11 +17,11 @@
                         <div class="invalid-feedback">{{ field.errors }}</div>
                     {% endif %}
                 </div>
-            {% empty %}
-                No fields, somehow..
-            {% endfor %}
-
-            <input type="submit" class="btn btn-success" value="Submit">
+            {% endfor %} 
+               
+            <br>
+            
+            <button class="btn btn-primary" type="submit"><i class="bi bi-cloud-arrow-up"></i> Upload</button>
         </form>
     </div>
 </div>

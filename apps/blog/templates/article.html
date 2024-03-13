@@ -1,29 +1,30 @@
 {% extends 'main.html' %}
 
+{% block title %}{{ article.title }}{% endblock title %}
+
 {% block content %}
 
 <div class="container">
     <div class="mt-4 rounded-3 bg-body-tertiary p-4">
-        <h1 align="center">{{ article.title }}</h1>
+        <h1 align="center">{{ article.title }} <a class="text-decoration-none" href="{% url "members:profile" article.author.username %}">@{{ article.author.username }}</a></h1>
         <img src="{{ article.image.url }}" class="rounded mx-auto d-block" alt="Article Image">
-        <p align="center" class="font-weight-light">By Ryan Gosling</p>
         <hr class="my-4">
         <p>{{ article.content }}</p>
         <div class="d-flex justify-content-start align-items-center">
             <div>
-                <span class="badge">👁️ {{ article.views }}</span>
+                <span class="badge"><i class="bi bi-eye"></i> {{ article.views }}</span>
             </div>
 
             <div>
                 <a href={% url "blog:like" article.id %} class="text-decoration-none">
                     <span class="btn" id="btn_like_{{ article.id }}" style="cursor: pointer;">
-                        👍 {{ article.likes }}
+                        <i class="bi bi-hand-thumbs-up"></i> {{ article.likes }}
                     </span>
                 </a>
 
                 <a href={% url 'blog:dislike' article.id %} class="text-decoration-none">
                     <span class="btn" id="btn-dislike-{{ article.id }}" style="cursor: pointer;">
-                        👎 {{ article.dislikes }}
+                        <i class="bi bi-hand-thumbs-down"></i> {{ article.dislikes }}
                     </span>
                 </a>     
             </div> 
@@ -31,24 +32,34 @@
         </div>
 
         <hr class="my-4">  
-        <div>
-            <div class="container" id="article-form-container">
-                <div class="mt-4 rounded-3 bg-body-tertiary p-4">
-                    <form method="POST" action={% url 'blog:add-comment' article.id %} enctype="multipart/form-data" id="comment-form">
-                        {% csrf_token %}
-                        {{form_comment}}
-                        <input type="submit" class="btn btn-success" value="Submit">
-                    </form>
+
+
+        <form method="POST" action="{% url 'blog:add-comment' article.id %}" enctype="multipart/form-data" id="comment-form">
+            {% csrf_token %}
+
+            {% for field in form_comment %}
+                <div class="mb-3">
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="invalid-feedback">{{ field.errors }}</div>
+                    {% endif %}
                 </div>
-            </div>
-        </div>
-        <div class="row g-4" id="comments">
-            {% for comment in article.comments.all %}
-                {% include "comment_card.html" with comment=comment %}
-            {% empty %}
-                No comments
             {% endfor %}
-        </div>
+            <div class="d-grid gap-2">
+                <input type="submit" class="btn btn-success" value="Submit">
+            </div>
+        </form>
+        <br>
+        <p>
+            <strong class="h2">Comments</strong><span class="badge bg-secondary">{{ article.comments.all|length }}</span>
+        </p>
+
+        {% for comment in article.comments.all %}
+            {% include "comment_card.html" with comment=comment %}
+        {% empty %}
+            No comments...
+        {% endfor %}
+        
     </div>
 </div>
 

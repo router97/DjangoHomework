@@ -1,13 +1,20 @@
-from django.forms import ModelForm
+from django import forms
 from .models import Article, Comment
 
-class ArticleForm(ModelForm):
+class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
-        fields = '__all__'
+        fields = ['title', 'content', 'image']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter the title'}),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write here'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'})
+        }
 
-class CommentForm(ModelForm):
+class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = '__all__'
-        exclude = ['article']
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter your comment'})
+        }   

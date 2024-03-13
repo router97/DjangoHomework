@@ -1,23 +1,21 @@
-<div>
-    <div class="card" id="comment-card-{{ comment.id }}">
-        <div class="card-body" id="comment-card-{{ comment.id }}-body">
-            <h5 class="card-title">{{ comment.author }}</h5>
-            <p class="card-text">
-                <small class="text-muted">{{ comment.created_at|timesince }}</small>
-            </p>
-            <p>
-                {{ comment.content }}
-            </p>
-        </div>
-        <div class="card-footer" id="comment-card-{{ comment.id }}-footer">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <a href={% url "blog:like-comment" comment.id %} class="text-decoration-none">
-                        <span class="btn" id="btn_like_{{ comment.id }}" style="cursor: pointer;">
-                            👍 {{ comment.likes }}
-                        </span>
-                    </a>
-                </div>
+<div class="card" id="comment-card-{{ comment.id }}">
+    <div class="card-body" id="comment-card-{{ comment.id }}-body">
+        <h5 class="card-title"><a class="text-decoration-none" href="{% url "members:profile" comment.author.username %}">@{{ comment.author.username }}</a></h5>
+        <p class="card-text">
+            <small class="text-muted">{{ comment.created_at|timesince }}</small>
+        </p>
+        <p>
+            {{ comment.content }}
+        </p>
+    </div>
+    <div class="card-footer" id="comment-card-{{ comment.id }}-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <a href={% url "blog:like-comment" comment.id %} class="text-decoration-none">
+                    <span class="btn" id="btn_like_{{ comment.id }}" style="cursor: pointer;">
+                        <i class="bi bi-hand-thumbs-up"></i> {{ comment.likes }}
+                    </span>
+                </a>
             </div>
         </div>
     </div>

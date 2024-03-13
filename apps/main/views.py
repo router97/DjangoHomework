@@ -10,17 +10,13 @@ def favicon(request: HttpRequest) -> FileResponse:
 def index(request: HttpRequest) -> HttpResponse:
     articles = Article.objects.all()
     context = {'articles': articles}
-    
     return render(request, 'index.html', context)
 
 def about(request: HttpRequest) -> HttpResponse:
-    context = {}
-    return render(request, 'about.html', context)
+    return render(request, 'about.html')
 
 def contacts(request: HttpRequest) -> HttpResponse:
-    context = {}
-    return render(request, 'contacts.html', context)
+    return render(request, 'contacts.html')
 
 def sigma(request: HttpRequest) -> HttpResponse:
-    context = {}
-    return render(request, 'sigma.html', context)
+    return render(request, 'sigma.html')

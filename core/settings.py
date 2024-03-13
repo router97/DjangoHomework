@@ -111,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'uk-ua'
+LANGUAGE_CODE = 'en'
 
 TIME_ZONE = 'UTC'
 
@@ -124,6 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 MEDIA_URL = '/media/'
+LOGIN_URL='members:login'
 MEDIA_ROOT = BASE_DIR / 'media/'
 STATIC_URL = '/static/'
 

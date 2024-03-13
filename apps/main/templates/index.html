@@ -1,5 +1,7 @@
 {% extends 'main.html' %}
 
+{% block title%}Blog{%endblock title%}
+
 {% block content %}
 
 {% load static %}
@@ -12,8 +14,8 @@
     </p>
 
     <!-- Form to add a new article -->
-    <form action={% url "blog:add-article" %} id="add-article" class="mb-4">
-        <button type="submit" class="btn btn-primary">Create article</button>
+    <form class="mb-4" id="add-article" action="{% url "blog:add-article" %}">
+        <button class="btn btn-primary" type="submit"><i class="bi bi-envelope-plus"></i> Create Article</button>
     </form>
 
     <hr class="my-4">
@@ -21,15 +23,11 @@
     <!-- Article cards -->
     <div class="row g-4" id="articles">
         {% for article in articles %}
-            {% include 'article_card.html' with article=article %}
-        {% empty %}
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">No articles</h5>
-                    </div>
-                </div>
+            <div class="col-4">
+                {% include 'article_card.html' with article=article %}
             </div>
+        {% empty %}
+            <h5>No articles...</h5>
         {% endfor %}
     </div>
 </div>
