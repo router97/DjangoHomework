@@ -4,9 +4,8 @@
 
 <div class="container">
     <div class="mt-4 rounded-3 bg-body-tertiary p-4">
-        <h1 align="center">{{ article.title }}</h1>
+        <h1 align="center">{{ article.title }} <a class="text-decoration-none" href="{% url "members:profile" article.author.username %}">@{{ article.author.username }}</a></h1>
         <img src="{{ article.image.url }}" class="rounded mx-auto d-block" alt="Article Image">
-        <p align="center" class="font-weight-light">By Ryan Gosling</p>
         <hr class="my-4">
         <p>{{ article.content }}</p>
         <div class="d-flex justify-content-start align-items-center">

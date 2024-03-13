@@ -60,11 +60,14 @@
                 {% endfor %}
             
             {% else %}
-
+                <form class="mb-4" id="add-article" action="{% url "blog:add-article" %}">
+                    <button class="btn btn-primary" type="submit">Create article</button>
+                </form>
                 {% for article in user_context.articles.all %}
                     <div class="col-4">
                         <div class="d-flex justify-content-between">
                             <a class="btn btn-danger flex-fill" href="{% url "blog:delete-article" article.id %}" type="submit">Delete</a>
+                            <a class="btn btn-warning flex-fill" href="{% url "blog:edit-article" article.id %}" type="submit">Edit</a>
                         </div>
                         {% include "article_card.html" with article=article %}
                     </div>     

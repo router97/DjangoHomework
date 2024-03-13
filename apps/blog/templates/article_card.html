@@ -3,7 +3,7 @@
         <img class="card-img-top" src="{{ article.image.url }}" alt="Article Image">
         <!-- class="card-img-overlay" -->
         <div class="card-body" id="article-card-{{article.id}}-body">
-            <h5 class="card-title">{{ article.title }} <a href="{% url "members:profile" article.author.username %}">@{{ article.author.username }}</a></h5>
+            <h5 class="card-title">{{ article.title }} - <a class="text-decoration-none" href="{% url "members:profile" article.author.username %}">@{{ article.author.username }}</a></h5>
             <p class="card-text">
                 <small class="text-muted">{{ article.created_at|timesince }}</small>
             </p>
