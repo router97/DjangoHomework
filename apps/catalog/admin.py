@@ -5,3 +5,4 @@ from .models import Catalog
 @admin.register(Catalog)
 class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
+    list_display = ('name', 'image')

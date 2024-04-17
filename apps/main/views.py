@@ -1,16 +1,23 @@
 from django.shortcuts import render, HttpResponse
-from django.conf import settings
-from django.http import HttpRequest, FileResponse
+from django.http import HttpRequest
 from ..blog.models import Article
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-def favicon(request: HttpRequest) -> FileResponse:
-    file = (settings.BASE_DIR / "static" / "favicon.svg").open("rb")
-    return FileResponse(file)
+def index(request):
+    article_list = Article.objects.all().select_related('author')
+    paginator = Paginator(article_list, 3) 
 
-def index(request: HttpRequest) -> HttpResponse:
-    articles = Article.objects.all()
-    context = {'articles': articles}
-    return render(request, 'index.html', context)
+    page = request.GET.get('page')
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+       
+        articles = paginator.page(1)
+    except EmptyPage:
+        
+        articles = paginator.page(paginator.num_pages)
+
+    return render(request, 'index.html', {'articles': articles})
 
 def about(request: HttpRequest) -> HttpResponse:
     return render(request, 'about.html')

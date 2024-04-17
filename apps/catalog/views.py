@@ -7,3 +7,6 @@ class CatalogListView(ListView):
     model = Catalog
     template_name = 'catalog/index.html'
     context_object_name = 'categories'
+    
+    def get_queryset(self):
+        return super().get_queryset().select_related('parent').prefetch_related('child')

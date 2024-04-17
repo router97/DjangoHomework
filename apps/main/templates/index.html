@@ -1,16 +1,15 @@
 {% extends 'main.html' %}
 
-{% block title%}Blog{%endblock title%}
+{% block title%}Blog{% endblock title %}
 
 {% block content %}
-
 {% load static %}
 
 <div class="container" id="blog">
     <h1>Blog</h1>
 
     <p>
-        <strong>Amount:</strong> <span class="badge bg-secondary">{{ articles|length }}</span>
+        <strong>Amount:</strong> <span class="badge bg-secondary">{{ articles.paginator.count }}</span>
     </p>
 
     <!-- Form to add a new article -->
@@ -30,6 +29,31 @@
             <h5>No articles...</h5>
         {% endfor %}
     </div>
-</div>
 
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if articles.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ articles.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item active"><a class="page-link" href="?page={{ articles.number }}">{{ articles.number }}</a></li>
+
+            {% if articles.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ articles.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ articles.paginator.num_pages }}">Last &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+</div>
 {% endblock content %}
