@@ -8,4 +8,5 @@ urlpatterns = [
     path('', include('apps.main.urls', namespace = 'main')),
     path('', include('apps.blog.urls', namespace='blog')),
     path('', include('apps.members.urls', namespace='members')),
+    path('catalog/', include('apps.catalog.urls', namespace='catalog')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
