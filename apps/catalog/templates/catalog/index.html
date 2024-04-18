@@ -1,24 +1,32 @@
-{% extends 'main.html' %}
+{% extends "base.html" %}
 
 {% block title %}Catalog{% endblock title %}
 
 {% block content %}
-
-{% load static %}
-
-<div class="container" id="catalog">
-    <h1>Catalog <span class="badge bg-secondary">{{ object_list|length }}</span></h1>
+<div class="container">
+    <h1>Catalog</h1>
+    <hr class="my-4">
     {% if object_list %}
-        <ul>
+        <div class="row row-cols-3 g-4 mt-4">
             {% for category in object_list %}
-                <li>
-                    <a href="{% url "catalog:category" category.slug %}">
-                        {{ category.name }}
+                <div class="col">
+                    <a href="{{ category.get_absolute_url }}" class="card-link">
+                        <div class="card position-relative shadow">
+                            {% if category.image %}
+                                <img src="{{ category.image.url }}" class="card-img" alt="{{ category.name }}">
+                                <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                                    <h5 class="card-title text-white">{{ category.name }}</h5>
+                                </div>
+                            {% else %}
+                                <div class="image-placeholder"></div>
+                            {% endif %}
+                        </div>
                     </a>
-                </li>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
+    {% else %}
+        <p>No categories available</p>
     {% endif %}
 </div>
-
 {% endblock content %}

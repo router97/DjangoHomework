@@ -144,3 +144,19 @@ def like_comment(request: HttpRequest, comment_id: int) -> HttpResponseRedirect:
     comment.save(update_fields=('likes',))
     next_url = request.META.get('HTTP_REFERER', '/')
     return redirect(next_url)
+
+def index(request):
+    article_list = Article.objects.all().select_related('author')
+    paginator = Paginator(article_list, 12) 
+
+    page = request.GET.get('page')
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+       
+        articles = paginator.page(1)
+    except EmptyPage:
+        
+        articles = paginator.page(paginator.num_pages)
+
+    return render(request, 'index.html', {'articles': articles})

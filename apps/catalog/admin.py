@@ -26,5 +26,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'price', 'created_at', 'updated_at')
+    search_fields = ('name', 'description')
     prepopulated_fields = {'slug': ('name',)}
+    list_filter = ('category',)
     inlines = (ProductCategoryInline,)

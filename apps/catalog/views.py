@@ -1,20 +1,39 @@
-# from django.shortcuts import render, HttpResponse
-# from django.http import HttpRequest
+from django.urls import reverse
+from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
-
-from .models import Catalog, Product
+from .models import Catalog, Product, ProductCategory
+from django.db.models import Q
 
 
 class CatalogListView(ListView):
     model = Catalog
     template_name = 'catalog/index.html'
-    context_object_name = 'categories'
+    context_object_name = 'categories' 
     
     def get_queryset(self):
-        return super().get_queryset().select_related('parent').prefetch_related('child')
-        # return Catalog.objects.filter(parent=None).select_related('parent').prefetch_related('child')
+        return Catalog.objects.filter(parent=None)
     
-class ProductByCategoryView(DetailView):
-    model = Catalog
+
+class ProductByCategoryView(ListView):
     template_name = 'catalog/product_by_category.html'
-    context_object_name = 'category'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        category_slug = self.kwargs['slug']
+        category = get_object_or_404(Catalog, slug=category_slug)
+        descendants = category.get_descendants(include_self=True)
+        queryset = Product.objects.filter(category__in=descendants).prefetch_related('category')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category_slug = self.kwargs['slug']
+        category = get_object_or_404(Catalog, slug=category_slug)
+        context['category'] = category
+        context['categories'] = Catalog.objects.filter(parent=category)
+        return context
+    
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'catalog/product.html'
+    context_object_name = 'product'

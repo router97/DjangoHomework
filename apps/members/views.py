@@ -23,7 +23,7 @@ class LoginView(View):
         
         login(request, user)
         messages.success(request, 'Logged in successfully')
-        return redirect('main:index')
+        return redirect('blog:index')
 
 class RegisterView(View):
     def get(self, request: HttpRequest) -> HttpResponse:
@@ -41,7 +41,7 @@ class RegisterView(View):
         user = form.save()
         login(request, user)
         
-        return redirect('main:index')
+        return redirect('blog:index')
 
 class ProfileView(View):
     def get(self, request: HttpRequest, username: str) -> HttpResponse:

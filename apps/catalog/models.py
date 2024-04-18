@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.urls import reverse
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -48,6 +49,9 @@ class Catalog(MPTTModel):
         null=True, 
         verbose_name='Parent Category', 
     )
+    
+    def get_absolute_url(self):
+        return reverse("catalog:category", kwargs={"slug": self.slug})
     
     class Meta:
         ordering = ['name']
@@ -111,6 +115,14 @@ class Product(models.Model):
         auto_now=True, 
     )
     
+    image = models.ImageField(
+        verbose_name='Image', 
+        upload_to='catalog/product/', 
+        blank=True, 
+        null=True, 
+        help_text='Upload an image for the product.', 
+    )
+    
     category = models.ManyToManyField(
         to=Catalog, 
         through='ProductCategory', 
@@ -118,6 +130,21 @@ class Product(models.Model):
         verbose_name='Categories', 
         blank=True, 
     )
+    
+    class Meta:
+        verbose_name = 'Product'
+        verbose_name_plural = 'Products'
+        ordering = ['price', 'quantity']
+    
+    def get_absolute_url(self):
+        return reverse("catalog:product", kwargs={"category_slug": self.main_category().slug, "slug": self.slug})
+    
+    def main_category(self):
+        category = self.category.filter(productcategory__is_main=True).first()
+        print('SIGMAAA', category)
+        if category:
+            return category
+        return self.category.first()
 
 class ProductCategory(models.Model):
     product = models.ForeignKey(
