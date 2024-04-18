@@ -20,16 +20,17 @@
 
 
         {% block messages %}
-
             {% if messages %}
-                {% for message in messages %}
-                    <div class="mt-3 alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endfor %}
+                <div class="container mt-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill{% elif message.tags == 'info' %}bi-info-circle-fill{% elif message.tags == 'warning' %}bi-exclamation-triangle-fill{% elif message.tags == 'error' %}bi-x-circle-fill{% endif %}"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
-
         {% endblock messages %}
 
 

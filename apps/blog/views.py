@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpRequest
 from django.views import View
-from django.views.decorators.http import require_POST
-from .models import Article, Comment
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from .models import Article, Comment
 from .forms import ArticleForm, CommentForm
 
 def article(request: HttpRequest, id: int) -> HttpResponse:
@@ -13,9 +15,26 @@ def article(request: HttpRequest, id: int) -> HttpResponse:
     article.views += 1
     article.save(update_fields=('views',))
     form_comment = CommentForm()
+
+    # Retrieve all comments for the article
+    all_comments = article.comments.all()
+
+    # Paginate comments
+    paginator = Paginator(all_comments, 10)  # Change 10 to your desired number of comments per page
+    page_number = request.GET.get('page')
+    try:
+        comments = paginator.page(page_number)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page
+        comments = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results
+        comments = paginator.page(paginator.num_pages)
+
     context = {
         'article': article,
-        'form_comment': form_comment
+        'form_comment': form_comment,
+        'comments': comments,
     }
     return render(request, 'article.html', context)
 

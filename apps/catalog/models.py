@@ -49,8 +49,102 @@ class Catalog(MPTTModel):
         verbose_name='Parent Category', 
     )
     
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
+        db_table_comment = 'Product categories'
+    
     class MPTTMeta:
         order_insertion_by = ['name']
     
     def __str__(self):
-        return self.name    
+        return self.name
+
+class Product(models.Model):
+    id = models.UUIDField(
+        primary_key=True, 
+        default=uuid.uuid4, 
+        editable=False, 
+        verbose_name='ID', 
+    )
+    
+    name = models.CharField(
+        verbose_name='Name', 
+        max_length=255, 
+        help_text='Enter the name of the product.', 
+    )
+    
+    slug = models.SlugField(
+        verbose_name='URL', 
+        max_length=255, 
+        unique=True, 
+        help_text='A unique slug for the product.', 
+    )
+    
+    description = models.TextField(
+        verbose_name='Description', 
+        blank=True, 
+        null=True, 
+        help_text='Enter a description for the product.', 
+    )
+    
+    quantity = models.PositiveIntegerField(
+        verbose_name='Quantity', 
+        default=0, 
+        help_text='Amount available' 
+    )
+    
+    price = models.DecimalField(
+        verbose_name='Price', 
+        max_digits=10, 
+        decimal_places=2, 
+    )
+    
+    created_at = models.DateTimeField(
+        verbose_name='Created at', 
+        auto_now_add=True, 
+    )
+    
+    updated_at = models.DateTimeField(
+        verbose_name='Updated at', 
+        auto_now=True, 
+    )
+    
+    category = models.ManyToManyField(
+        to=Catalog, 
+        through='ProductCategory', 
+        related_name='products', 
+        verbose_name='Categories', 
+        blank=True, 
+    )
+
+class ProductCategory(models.Model):
+    product = models.ForeignKey(
+        to=Product, 
+        on_delete=models.CASCADE, 
+        verbose_name='Product', 
+    )
+    
+    category = models.ForeignKey(
+        to=Catalog, 
+        on_delete=models.CASCADE, 
+        verbose_name='Category', 
+    )
+    
+    is_main = models.BooleanField(
+        verbose_name='Main Category', 
+        default=False, 
+    )
+    
+    def __str__(self):
+        return f'{self.product.name} -> {self.category.name}'
+    
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.is_main:
+            ProductCategory.objects.filter(product=self.product, is_main=True).update(is_main=False)
+        super().save(force_insert, force_update, using, update_fields)
+        
+    class Meta:
+        verbose_name = 'Product category'
+        verbose_name_plural = 'product categories'

@@ -1,7 +1,11 @@
 from django.contrib import admin
 
-from .models import Catalog
+from .models import Catalog, Product
 
+
+class ProductCategoryInline(admin.TabularInline):
+    model = Product.category.through
+    extra = 1
 
 @admin.register(Catalog)
 class CategoryAdmin(admin.ModelAdmin):
@@ -12,9 +16,15 @@ class CategoryAdmin(admin.ModelAdmin):
     
     fieldsets = (
         (None, {
-            'fields': ('name', 'description', 'image')
+            'fields': ('name', 'slug', 'description', 'image')
         }),
         ('Hierarchy', {
             'fields': ('parent',)
         }),
     )
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('name', 'price', 'created_at', 'updated_at')
+    prepopulated_fields = {'slug': ('name',)}
+    inlines = (ProductCategoryInline,)

@@ -5,7 +5,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def index(request):
     article_list = Article.objects.all().select_related('author')
-    paginator = Paginator(article_list, 3) 
+    paginator = Paginator(article_list, 12) 
 
     page = request.GET.get('page')
     try:

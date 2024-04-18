@@ -9,27 +9,14 @@
 <div class="container" id="catalog">
     <h1>Catalog <span class="badge bg-secondary">{{ object_list|length }}</span></h1>
 
-    
-
     {% if object_list %}
         <ul>
             {% for category in object_list %}
-                {% if category.parent is None %}
-                    <li>
-                        <a href="{% url "catalog:category" category.slug %}">
-                            {{ category.name }}
-                        </a>
-                        {% if category.child.all %}
-                            <ul>
-                                {% for child in category.child.all %}
-                                    <a href="{% url "catalog:category" child.slug %}">
-                                        <li>{{ child.name }}</li>
-                                    </a>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                    </li>
-                {% endif %}
+                <li>
+                    <a href="{% url "catalog:category" category.slug %}">
+                        {{ category.name }}
+                    </a>
+                </li>
             {% endfor %}
         </ul>
     {% endif %}
