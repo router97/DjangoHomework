@@ -1,13 +1,21 @@
 {% load static %}
+
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg bg-body-tertiary" id="navbar">
     <div class="container">
+
+        <!-- Logo -->
         <a class="navbar-brand" href="{% url 'main:index' %}">
             <img src="{% static 'favicon.svg' %}" alt="Logo" height=50 width=50>
             DjangoHomework
         </a>
+
+        <!-- Navbar toggler -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
+        <!-- Navbar links -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
@@ -17,15 +25,15 @@
                     <a class="nav-link" href={% url "catalog:index" %}><i class="bi bi-info-circle"></i> Catalog</a>
                 </li>
                 {% if request.user.is_superuser %}
-                <li class="nav-item">
-                    <a class="nav-link" href={% url "admin:index" %}><i class="bi bi-gear"></i> Admin</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href={% url "admin:index" %}><i class="bi bi-gear"></i> Admin</a>
+                    </li>
                 {% endif %}
             </ul>
 
+            <!-- Profile dropdown -->
             {% if request.user.is_authenticated %}
                 <ul class="navbar-nav mb-lg-0">
-
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle"></i>
@@ -36,8 +44,9 @@
                             <li><a class="btn btn-outline-danger" href={% url "members:logout" %}>Logout</a></li>
                         </ul>
                     </li>
-
                 </ul>
+
+            <!-- Login/Register -->
             {% else %}
                 <ul class="navbar-nav mb-lg-0">
                     <li class="nav-item">
@@ -51,19 +60,3 @@
         </div>
     </div>
 </nav>
-
-{% comment %} <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-      <div class="profile-pic">
-          <img src="https://source.unsplash.com/250x250?girl" alt="Profile Picture">
-       </div>
-   <!-- You can also use icon as follows: -->
-     <!--  <i class="fas fa-user"></i> -->
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-      <li><a class="dropdown-item" href="#"><i class="fas fa-sliders-h fa-fw"></i> Account</a></li>
-      <li><a class="dropdown-item" href="#"><i class="fas fa-cog fa-fw"></i> Settings</a></li>
-      <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-fw"></i> Log Out</a></li>
-    </ul>
-  </li> {% endcomment %}

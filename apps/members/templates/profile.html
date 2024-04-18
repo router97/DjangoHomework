@@ -1,18 +1,17 @@
 {% extends "main.html" %}
 
-{% block title %}{{user_context.username}}{% endblock title %}
+{% block title %}{{ user_context.username }}{% endblock title %}
 
 {% block content %}
 
 <div class="container" id="profile-container">
+
+    <!-- Profile -->
     <div class="mt-4 rounded-3 bg-body-tertiary shadow p-4">
         <h1 class="mb-4">Profile</h1>
-
         <form method="POST" id="profile-form" action="" enctype="multipart/form-data">
-            {% csrf_token %}    
-            
+            {% csrf_token %}
             <fieldset {% if user_context != request.user %}disabled{% endif %}>
-                
                 <div class="mb-2">
                     <label class="form-label" for="username">Username</label>
                     <input class="form-control" id="username" name="username" type="text" value="{{ user_context.username }}" placeholder="Username">
@@ -38,21 +37,21 @@
                 <div class="d-grid gap-2">
                     <button class="btn btn-primary" type="submit">Update</button>
                 </div>
-
             </fieldset>
         </form>
     </div>
 
+    <!-- Articles -->
     <div class="mt-4 rounded-3 bg-body-tertiary p-4">
         <h1>Articles</h1>
         <p>
             <strong>Amount:</strong> <span class="badge bg-secondary">{{ user_context.articles.all|length }}</span>
         </p>
-        <br>
 
         <div class="row g-4" id="articles">
-            {% if request.user != user_context %}
 
+            <!-- Cards without edit/delete buttons -->
+            {% if request.user != user_context %}
                 {% for article in user_context.articles.all %}
                     <div class="col-4">
                         {% include "article_card.html" with article=article %}
@@ -61,6 +60,7 @@
                     <p>No articles</p>
                 {% endfor %}
             
+            <!-- Cards with edit/delete buttons -->
             {% else %}
                 <form class="mb-4" id="add-article" action="{% url "blog:add-article" %}">
                     <button class="btn btn-primary" type="submit"><i class="bi bi-envelope-plus"></i> Create article</button>
@@ -76,7 +76,6 @@
                 {% empty %}
                     <p>No articles</p>
                 {% endfor %}
-
             {% endif %}
         </div>
     </div>

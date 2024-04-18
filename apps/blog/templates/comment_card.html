@@ -1,5 +1,9 @@
 <div class="card mb-3" id="comment-card-{{ comment.id }}">
+
+    <!-- Body -->
     <div class="card-body" id="comment-card-{{ comment.id }}-body">
+
+        <!-- Author and age -->
         <div class="d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">
                 <a class="text-decoration-none" href="{% url "members:profile" comment.author.username %}">
@@ -8,13 +12,17 @@
             </h5>
             <small class="text-muted">{{ comment.created_at|timesince }}</small>
         </div>
+
+        <!-- Content -->
         <p class="card-text mt-2">
             {{ comment.content }}
         </p>
     </div>
+
+    <!-- Footer -->
     <div class="card-footer d-flex justify-content-between align-items-center" id="comment-card-{{ comment.id }}-footer">
         <div>
-            <button type="button" class="btn btn-outline-primary btn-sm" id="btn_like_{{ comment.id }}" data-comment-id="{{ comment.id }}">
+            <button type="button" class="btn btn-outline-primary btn-sm" id="btn_like_{{ comment.id }}">
                 <i class="bi bi-hand-thumbs-up"></i> Like <span class="badge bg-primary">{{ comment.likes }}</span>
             </button>
         </div>
