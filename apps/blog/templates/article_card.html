@@ -1,7 +1,8 @@
 <div class="card" id="article-card-{{ article.id }}">
+
+    <!-- Body -->
     <a href={% url "blog:article" article.id %} class="text-decoration-none text-white">
         <img class="card-img-top" src="{{ article.image.url }}" alt="Article Image">
-        <!-- class="card-img-overlay" -->
         <div class="card-body" id="article-card-{{article.id}}-body">
             <h5 class="card-title">{{ article.title }} - <a class="text-decoration-none" href="{% url "members:profile" article.author.username %}">@{{ article.author.username }}</a></h5>
             <p class="card-text">
@@ -9,24 +10,28 @@
             </p>
         </div>
     </a>
+
+    <!-- Footer -->
     <div class="card-footer" id="article-card-{{article.id}}-footer">
         <div class="d-flex justify-content-between align-items-center">
+
+            <!-- Views -->
             <div>
                 <span class="badge"><i class="bi bi-eye"></i> {{ article.views }}</span>
             </div>
+
+            <!-- Likes/Dislikes -->
             <div>
                 <a href={% url "blog:like" article.id %} class="text-decoration-none">
                     <span class="btn" id="btn_like_{{ article.id }}" style="cursor: pointer;">
                         <i class="bi bi-hand-thumbs-up"></i> {{ article.likes }}
                     </span>
                 </a>
-
                 <a href={% url 'blog:dislike' article.id %} class="text-decoration-none">
                     <span class="btn" id="btn-dislike-{{ article.id }}" style="cursor: pointer;">
                         <i class="bi bi-hand-thumbs-down"></i> {{ article.dislikes }}
                     </span>
                 </a>
-
             </div>
         </div>
     </div>

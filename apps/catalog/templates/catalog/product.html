@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        
+        <!-- Product Image -->
+        <div class="col-md-6">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+            {% else %}
+                <img src='https://via.placeholder.com/500' class='img-fluid' alt='{{ product.name }}'>
+            {% endif %}
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title fw-bold">{{ product.name }}</h2>
+                    <h5 class="card-subtitle mb-3">Price: <span class="text-success">{{ product.price }}</span> UAH</h5>
+                    <p class="card-text">Availability: 
+                        {% if product.quantity %}
+                        {% if product.quantity >= 5 %}
+                            <span class="text-success">In Stock</span>
+                        {% else %}
+                            <span class="text-warning">Low Stock</span>
+                        {% endif %}
+                        {% else %}
+                            <span class="text-danger">Out of Stock</span>
+                        {% endif %}
+                    </p>
+                    <p class="card-text mb-4">{{ product.description }}</p>
+                    <button type="button" class="btn btn-primary" disabled>Add to Cart</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

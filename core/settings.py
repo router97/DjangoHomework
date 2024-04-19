@@ -26,7 +26,9 @@ SECRET_KEY = 'django-insecure-ml^lwj9k&2wg%^=-ioh(h%=8$)9cba_(hi$=v%1p^h@&c$x2u=
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.6']
-
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 # Application definition
 
@@ -37,12 +39,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.main.apps.MainConfig',
-    'apps.blog.apps.BlogConfig',
-    'apps.members.apps.MembersConfig'
+    
+    "debug_toolbar",
+    
+    'apps.main',
+    'apps.blog',
+    'apps.members',
+    'apps.catalog',
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,7 +65,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates', 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,6 +135,7 @@ MEDIA_URL = '/media/'
 LOGIN_URL='members:login'
 MEDIA_ROOT = BASE_DIR / 'media/'
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 
 
@@ -134,3 +143,7 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGIN_URL = 'members:login'
+LOGOUT_URL = 'members:logout'
