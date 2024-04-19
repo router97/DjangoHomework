@@ -21,7 +21,8 @@
                 <div class="card-body">
                     <h2 class="card-title fw-bold">{{ product.name }}</h2>
                     <h5 class="card-subtitle mb-3">Price: <span class="text-success">{{ product.price }}</span> UAH</h5>
-                    <p class="card-text">Availability: {% if product.quantity %}
+                    <p class="card-text">Availability: 
+                        {% if product.quantity %}
                         {% if product.quantity >= 5 %}
                             <span class="text-success">In Stock</span>
                         {% else %}
@@ -36,6 +37,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 {% endblock %}

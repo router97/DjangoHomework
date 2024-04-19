@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.urls import reverse
+from django.db.models import Sum
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -61,6 +62,19 @@ class Catalog(MPTTModel):
     
     def get_absolute_url(self):
         return reverse('catalog:category', kwargs={'slug': self.slug})
+    
+    def get_products_count(self):
+        # Initialize total count
+        total_count = self.products.count()
+
+        # Get direct subcategories with related products
+        subcategories = Catalog.objects.filter(parent=self)
+
+        # Recursively count products in subcategories
+        for subcategory in subcategories:
+            total_count += subcategory.get_products_count()
+
+        return total_count
     
     def __str__(self):
         return self.name
