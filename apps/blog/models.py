@@ -1,3 +1,5 @@
+from math import ceil
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -20,7 +22,7 @@ class Article(models.Model):
     
     content = models.TextField(
         verbose_name='Content', 
-        max_length=1000, 
+        max_length=10000, 
         blank=True, 
         editable=True, 
         help_text='Enter the content of the article.', 
@@ -68,6 +70,20 @@ class Article(models.Model):
         verbose_name_plural = 'Articles'
         ordering = ['-created_at', 'id']
     
+    def get_reading_time(self):
+        word_list = self.content.split()
+        word_count = len(word_list)
+        reading_time_minutes = word_count / 200
+        
+        if reading_time_minutes < 1:
+            reading_time_seconds = reading_time_minutes * 60
+            return f"{ceil(reading_time_seconds)} sec"
+        elif reading_time_minutes < 60:
+            return f"{ceil(reading_time_minutes)} min"
+        else:
+            reading_time_hours = reading_time_minutes / 60
+            return f"{ceil(reading_time_hours)} hr"
+        
     def __str__(self):
         return f"{self.title} (@{self.author.username})"
 

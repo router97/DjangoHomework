@@ -2,7 +2,6 @@ import uuid
 
 from django.db import models
 from django.urls import reverse
-from django.db.models import Sum
 
 from mptt.models import MPTTModel, TreeForeignKey
 

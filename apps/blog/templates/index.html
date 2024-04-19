@@ -6,24 +6,28 @@
 
 {% load static %}
 
-<div class="container" id="blog">
-    <h1>Blog</h1>
+<!-- Blog Text -->
+<div class="container-fluid p-4">
+    <div class="row justify-content-left">
+        <div class="col-md-8 text-left">
+            <h1 class="display-1">Blog</h1>
+            <p class="lead">There is an idea of a Patrick Bateman. Some kind of abstraction.</p>
+            <form class="mb-4" id="add-article" action="{% url "blog:add-article" %}">
+                <button class="btn btn-success btn-lg" type="submit">
+                    <i class="bi bi-plus-circle"></i> New Article
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
 
-    <p>
-        <strong>Amount:</strong> <span class="badge bg-secondary">{{ articles.paginator.count }}</span>
-    </p>
+<hr class="my-4">
 
-    <!-- Form to add a new article -->
-    <form class="mb-4" id="add-article" action="{% url "blog:add-article" %}">
-        <button class="btn btn-primary" type="submit"><i class="bi bi-envelope-plus"></i> Create Article</button>
-    </form>
-
-    <hr class="my-4">
-
+<div class="p-4">
     <!-- Article cards -->
     <div class="row g-4" id="articles">
         {% for article in articles %}
-            <div class="col-4">
+            <div class="col-3">
                 {% include 'article_card.html' with article=article %}
             </div>
         {% empty %}

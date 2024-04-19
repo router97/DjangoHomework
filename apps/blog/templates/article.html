@@ -29,28 +29,25 @@
                 </div>
             </div>
 
-            <!-- Add comment form -->
-            <form method="POST" action="{% url 'blog:add-comment' article.id %}" enctype="multipart/form-data" id="comment-form">
-                {% csrf_token %}
+            <br>
 
-                {% for field in form_comment %}
-                    <div class="mb-3">
-                        {{ field }}
-                        {% if field.errors %}
-                            <div class="invalid-feedback">{{ field.errors }}</div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-                <div class="d-grid gap-2">
-                    <input type="submit" class="btn btn-success" value="Submit">
+            <h2>{{ article.comments.all.count }} Comments</h2>
+
+            <!-- Add comment form -->
+            
+            <form method="POST" action="{% url 'blog:add-comment' article.id %}" enctype="multipart/form-data" id="comment-form" class="mb-4">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <textarea class="form-control" name="content" placeholder="Write a comment..." rows="3" required></textarea>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Comment</button>
                 </div>
             </form>
 
 
             <!-- Comments -->
-            <p>
-                <strong class="h2">Comments</strong><span class="badge bg-secondary">{{ article.comments.all|length }}</span>
-            </p>
+            
 
             {% for comment in comments %}
                 {% include "comment_card.html" with comment=comment %}
