@@ -54,7 +54,7 @@
         <img class="card-img-top" src="{{ article.image.url }}" alt="Article Image">
         
         <div class="like-ratio">
-            <i class="bi bi-hand-thumbs-up"></i>{{ article.likes|like_ratio:article.dislikes }}%
+            <i class="bi bi-hand-thumbs-up"></i>{{ article.get_like_dislike_percentage }}%
         </div>
         <div class="read-time">
             {{ article.get_reading_time }}

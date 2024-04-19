@@ -73,7 +73,7 @@ class Article(models.Model):
     def get_reading_time(self):
         word_list = self.content.split()
         word_count = len(word_list)
-        reading_time_minutes = word_count / 200
+        reading_time_minutes = word_count / 150
         
         if reading_time_minutes < 1:
             reading_time_seconds = reading_time_minutes * 60
@@ -83,7 +83,18 @@ class Article(models.Model):
         else:
             reading_time_hours = reading_time_minutes / 60
             return f"{ceil(reading_time_hours)} hr"
+    
+    def get_like_dislike_percentage(self):
         
+        if self.likes and self.dislikes:
+            return int( ( (self.likes - self.dislikes) / (self.likes + self.dislikes) ) * 100 )
+        
+        if not self.dislikes and self.likes:
+            return 100
+        
+        if self.dislikes and not self.likes or not self.dislikes and not self.likes:
+            return 0
+    
     def __str__(self):
         return f"{self.title} (@{self.author.username})"
 
