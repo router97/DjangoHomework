@@ -5,10 +5,16 @@
 {% block content %}
 <div class="container mt-5">
     <div class="row">
+        
         <!-- Product Image -->
         <div class="col-md-6">
-            <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+            {% else %}
+                <img src='https://via.placeholder.com/500' class='img-fluid' alt='{{ product.name }}'>
+            {% endif %}
         </div>
+
         <!-- Product Details -->
         <div class="col-md-6">
             <div class="card">
@@ -26,7 +32,7 @@
                         {% endif %}
                     </p>
                     <p class="card-text mb-4">{{ product.description }}</p>
-                    <button type="button" class="btn btn-primary">Add to Cart ¯\_(ツ)_/¯</button>
+                    <button type="button" class="btn btn-primary" disabled>Add to Cart</button>
                 </div>
             </div>
         </div>

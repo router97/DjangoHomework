@@ -8,10 +8,10 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 class Catalog(MPTTModel):
     id = models.UUIDField(
+        verbose_name='ID', 
         primary_key=True, 
         default=uuid.uuid4, 
         editable=False, 
-        verbose_name='ID', 
     )
     
     name = models.CharField(
@@ -43,34 +43,34 @@ class Catalog(MPTTModel):
     
     parent = TreeForeignKey(
         to='self', 
-        on_delete=models.CASCADE,
-        related_name='child',
-        blank=True,
-        null=True, 
+        on_delete=models.CASCADE, 
+        related_name='child', 
         verbose_name='Parent Category', 
+        blank=True, 
+        null=True, 
     )
     
-    def get_absolute_url(self):
-        return reverse("catalog:category", kwargs={"slug": self.slug})
-    
     class Meta:
-        ordering = ['name']
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
+        ordering = ['name']
         db_table_comment = 'Product categories'
     
     class MPTTMeta:
         order_insertion_by = ['name']
+    
+    def get_absolute_url(self):
+        return reverse('catalog:category', kwargs={'slug': self.slug})
     
     def __str__(self):
         return self.name
 
 class Product(models.Model):
     id = models.UUIDField(
+        verbose_name='ID', 
         primary_key=True, 
         default=uuid.uuid4, 
         editable=False, 
-        verbose_name='ID', 
     )
     
     name = models.CharField(
@@ -96,7 +96,7 @@ class Product(models.Model):
     quantity = models.PositiveIntegerField(
         verbose_name='Quantity', 
         default=0, 
-        help_text='Amount available' 
+        help_text='Amount available', 
     )
     
     price = models.DecimalField(
@@ -137,41 +137,48 @@ class Product(models.Model):
         ordering = ['price', 'quantity']
     
     def get_absolute_url(self):
-        return reverse("catalog:product", kwargs={"category_slug": self.main_category().slug, "slug": self.slug})
+        return reverse('catalog:product', kwargs={'category_slug': self.main_category().slug, 'slug': self.slug})
     
+    # FIXME: ijfmeakk
     def main_category(self):
         category = self.category.filter(productcategory__is_main=True).first()
-        print('SIGMAAA', category)
         if category:
             return category
         return self.category.first()
+    
+    def __str__(self):
+        return self.name
 
 class ProductCategory(models.Model):
     product = models.ForeignKey(
         to=Product, 
         on_delete=models.CASCADE, 
         verbose_name='Product', 
+        help_text='The product associated with this category.'
     )
     
     category = models.ForeignKey(
         to=Catalog, 
         on_delete=models.CASCADE, 
         verbose_name='Category', 
+        help_text='The category for this product.'
     )
     
     is_main = models.BooleanField(
         verbose_name='Main Category', 
         default=False, 
+        help_text='Shows if the category is the main one for the product.'
     )
+    
+    class Meta:
+        verbose_name = 'Product category'
+        verbose_name_plural = 'Product categories'
+    
+    # FIXME: wefijkfj2
+    def save(self, *args, **kwargs):
+        if self.is_main:
+            ProductCategory.objects.filter(product=self.product, is_main=True).exclude(pk=self.pk).update(is_main=False)
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f'{self.product.name} -> {self.category.name}'
-    
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.is_main:
-            ProductCategory.objects.filter(product=self.product, is_main=True).update(is_main=False)
-        super().save(force_insert, force_update, using, update_fields)
-        
-    class Meta:
-        verbose_name = 'Product category'
-        verbose_name_plural = 'product categories'
