@@ -63,17 +63,16 @@ class Catalog(MPTTModel):
         return reverse('catalog:category', kwargs={'slug': self.slug})
     
     def get_products_count(self):
-        # Initialize total count
-        total_count = self.products.count()
-
-        # Get direct subcategories with related products
-        subcategories = Catalog.objects.filter(parent=self)
-
-        # Recursively count products in subcategories
-        for subcategory in subcategories:
-            total_count += subcategory.get_products_count()
-
-        return total_count
+        product_count = self.products.all().count()
+        for child in self.get_children().prefetch_related('products'):
+            product_count += child.get_products_count()
+        return product_count
+    
+    def get_subcategories_count(self):
+        subcategory_count = self.get_children().count()
+        for child in self.get_children():
+            subcategory_count += child.get_subcategories_count()
+        return subcategory_count
     
     def __str__(self):
         return self.name
@@ -152,12 +151,9 @@ class Product(models.Model):
     def get_absolute_url(self):
         return reverse('catalog:product', kwargs={'category_slug': self.main_category().slug, 'slug': self.slug})
     
-    # FIXME: ijfmeakk
     def main_category(self):
-        category = self.category.filter(productcategory__is_main=True).first()
-        if category:
-            return category
-        return self.category.first()
+        main_category = self.category.filter(productcategory__is_main=True).first()
+        return main_category if main_category else self.category.first()
     
     def __str__(self):
         return self.name
@@ -187,7 +183,6 @@ class ProductCategory(models.Model):
         verbose_name = 'Product category'
         verbose_name_plural = 'Product categories'
     
-    # FIXME: wefijkfj2
     def save(self, *args, **kwargs):
         if self.is_main:
             ProductCategory.objects.filter(product=self.product, is_main=True).exclude(pk=self.pk).update(is_main=False)

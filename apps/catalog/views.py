@@ -15,12 +15,10 @@ class CatalogListView(ListView):
 class ProductByCategoryView(ListView):
     template_name = 'catalog/product_by_category.html'
     context_object_name = 'products'
-
-    # FIXME: 3i9ewokfmdnjgi
+    
     def get_queryset(self):
-        category_slug = self.kwargs['slug']
-        category = get_object_or_404(Catalog, slug=category_slug)
-        descendants = category.get_descendants(include_self=True)
+        category = self.kwargs.get('slug')
+        descendants = Catalog.objects.filter(slug=category).get_descendants(include_self=True)
         queryset = Product.objects.filter(category__in=descendants).prefetch_related('category')
         return queryset
 
