@@ -1,0 +1,52 @@
+<style>
+    .product-item {
+        transition: transform 0.2s,
+            filter 0.2s;
+        filter: brightness(90%);
+    }
+
+    .product-item:hover {
+        transform: scale(1.01);
+        filter: brightness(100%);
+    }
+
+    .product-item:active {
+        filter: brightness(80%);
+    }
+
+    .product-count {
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .product-div:hover .product-count {
+        opacity: 0.8;
+    }
+</style>
+
+<a href='{{ product.get_absolute_url }}' class="text-decoration-none">
+    <li class="list-group-item border-bottom border-2 mb-3 product-item">
+        <div class="row align-items-center">
+            <div class="col-1">
+                {% if product.image %}
+                    <img src='{{ product.image.url }}' class='img-fluid rounded shadow' alt='{{ product.name }}'>
+                {% else %}
+                    <img src='https://via.placeholder.com/150' class='img-fluid rounded shadow' alt='{{ product.name }}'>
+                {% endif %}
+            </div>
+            <div class="col">
+                <h3 class="mb-0">{{ product.name }}</h3>
+                <p class="text-muted mb-0">{{ product.price }} UAH</p>
+                {% if product.quantity %}
+                {% if product.quantity >= 5 %}
+                    <span class="text-success">In Stock</span>
+                {% else %}
+                    <span class="text-warning">Low Stock</span>
+                {% endif %}
+                {% else %}
+                    <span class="text-danger">Out of Stock</span>
+                {% endif %}
+            </div>
+        </div>
+    </li>
+</a>
