@@ -1,0 +1,29 @@
+<style>
+    .topic {
+        transition: transform 0.2s,
+            filter 0.2s,
+            rotate 0.2s;
+        filter: brightness(90%);
+    }
+
+    .topic:hover {
+        transform scale(1.01);
+        filter: brightness(100%);
+        rotate: 2deg;
+    }
+
+    .topic:active {
+        filter: brightness(80%);
+    }
+</style>
+
+<div class='col-3 col-sm-3 col-md-3 topic'>
+    <a href="{{ topic.get_absolute_url }}" class="card-link">
+        <div class="card position-relative shadow">
+            <img src={% if topic.image %}"{{ topic.image.url }}"{% else %}"https://image-placeholder.com/images/actual-size/450x300.png"{% endif %} class="card-img" alt="{{ topic.name }}">
+            <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                <h5 class="card-title text-white">{{ topic.name }}</h5>
+            </div>
+        </div>
+    </a>    
+</div>

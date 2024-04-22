@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for product in request.user.cart %}
+    {{ product.name }}
+{% empty %}
+    Nothing 
+{% endfor %}
+
+{% endblock content %}

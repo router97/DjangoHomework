@@ -22,7 +22,10 @@
                     <a class="nav-link" href={% url "main:about" %}><i class="bi bi-info-circle"></i> About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href={% url "catalog:index" %}><i class="bi bi-info-circle"></i> Catalog</a>
+                    <a class="nav-link" href={% url "catalog:index" %}><i class="bi bi-collection"></i> Catalog</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href={% url "quiz:index" %}><i class="bi bi-clipboard"></i> Quizzes</a>
                 </li>
                 {% if request.user.is_superuser %}
                     <li class="nav-item">

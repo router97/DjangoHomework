@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.name }}{% endblock title %}
+
+{% block content %}
+
+<form method="post" action="{% url 'quiz:submit_answer' pk=quiz.id %}">
+    {% csrf_token %}
+    {% for question in quiz.questions.all %}
+        <div class="card mb-3">
+            <div class="card-header bg-dark text-white">Question</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ question.text }}</h5>
+
+                <div class="list-group">
+                    {% if question.has_multiple_answers %}
+                    {% for answer in question.answers.all %}
+                    <label class="list-group-item">
+                        <input type="checkbox" name="answer{{ question.id }}" value="{{ answer.pk }}" class="form-check-input">
+                        {{ answer.text }}
+                    </label>
+                    {% endfor %}
+
+                    {% else %}
+                    {% for answer in question.answers.all %}
+                    <label class="list-group-item">
+                        <input type="radio" name="answer{{ question.id }}" value="{{ answer.pk }}" class="form-check-input">
+                        {{ answer.text }}
+                    </label>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+{% endblock content %}

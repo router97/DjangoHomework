@@ -41,11 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     "debug_toolbar",
+    "nested_admin",
     
     'apps.main',
     'apps.blog',
     'apps.members',
     'apps.catalog',
+    'apps.order',
+    'apps.quiz',
 ]
 
 MIDDLEWARE = [
