@@ -46,4 +46,3 @@ class QuizAdmin(NestedModelAdmin):
             'fields': ('author', 'topic')
         }),
     )
-    

@@ -2,21 +2,30 @@ import uuid
 
 from django.db import models
 from django.urls import reverse
-from django.utils.safestring import mark_safe
+from django.utils.safestring import SafeText, mark_safe
 from django.contrib.auth.models import User
-from django.db.models.query import QuerySet
 
 from mptt.models import MPTTModel, TreeForeignKey
 
 from PIL import Image
 
 
+class CompletionPercentageError(Exception):
+    """Raise for errors in calculating completion percentage of a quiz."""
+
 class Quiz(models.Model):
+    """
+    Represents a quiz.
+
+    Each quiz belongs to a specific topic and belongs to a user.
+    """
+
     id = models.UUIDField(
         verbose_name='ID', 
         primary_key=True, 
         default=uuid.uuid4, 
         editable=False, 
+        help_text='Unique identifier for the quiz.', 
     )
     topic = models.ForeignKey(
         to='Topic',
@@ -34,6 +43,7 @@ class Quiz(models.Model):
         verbose_name='Author', 
         null=True,
         default=None, 
+        help_text='The author of the quiz.', 
     )
     name = models.CharField(
         verbose_name='Name', 
@@ -66,26 +76,138 @@ class Quiz(models.Model):
     created_at = models.DateTimeField(
         verbose_name='Created at', 
         auto_now_add=True, 
+        help_text='The date and time when the quiz was created.', 
     )
     edited_at = models.DateTimeField(
         verbose_name='Edited at', 
         auto_now=True, 
+        help_text='The date and time when the quiz was last edited.', 
     )
-    
-    def get_absolute_url(self):
-        return reverse('quiz:quiz', kwargs={'topic_slug': self.topic.slug, 'slug': self.slug})
     
     class Meta:
         verbose_name = 'Quiz'
         verbose_name_plural = 'Quizzes'
-        ordering = ['name']
+        ordering = ['-edited_at', 'topic']
+    
+    def get_absolute_url(self) -> str:
+        """Returns the URL of the quiz."""
+        return reverse('quiz:quiz', kwargs={'topic_slug': self.topic.slug, 'slug': self.slug})
+    
+    # FIXME: Fix finding percentage value for complexity
+    def get_percentage_value_for_complexity(self) -> dict:
+        total_percentage = 0
+        amount_of_complexities = {
+            '1': 0, 
+            '2': 0, 
+            '3': 0, 
+        }
+        percentage_value_for_complexity = {
+            '1': 0, 
+            '2': 0, 
+            '3': 0, 
+        }
+        weights = {
+            '1': 1, 
+            '2': 1.5, 
+            '3': 2, 
+        }
+        
+        # Find total questions and amount of questions of each complexity
+        total_questions = self.questions.count()
+        for complexity in self.questions.all().values_list('complexity', flat=True):
+            amount_of_complexities[complexity] += 1
+        assert total_questions == sum(value for value in amount_of_complexities.values()), "Amount of questions in each quantity doesn't equal the total amount."
+        
+        # FIXME: Find percentage value for complexity
+        for complexity, count in amount_of_complexities.items():
+            
+            # If all questions are of the same complexity
+            if count == total_questions:
+                percentage_value_for_complexity[complexity] = 100 / count
+                total_percentage = 100
+                break
+            
+            # If there are no questions of such complexity
+            elif count == 0:
+                continue
+            
+            percentage_value_for_complexity[complexity] = (count * weights[complexity] / total_questions) * 100
+            total_percentage += percentage_value_for_complexity[complexity]
+        
+        # Round up percentage values for complexity
+        percentage_value_for_complexity = {key: round(value, 1) for key, value in percentage_value_for_complexity.items()}
+        print(percentage_value_for_complexity)
+        return percentage_value_for_complexity
+
+    def get_completion(self, questions_answers: dict, return_questions: bool = False) -> int | tuple[int, dict]:
+        """Calculate completion percentage.
+
+        Args:
+            questions_answers (dict): Key is Question, value is QuerySet of answers of the user.
+            return_questions (bool, optional): Whether to return detailed question completion status. Defaults to False.
+        
+        Raises:
+            CompletionPercentageError: If the completion percent is more than 100%.
+        
+        Returns:
+            int | tuple[int, dict]: Completion percentage or (percentage, question status).
+        """
+        
+        questions_completed = {}
+        total_completion = 0
+        percentage_value_for_complexity = self.get_percentage_value_for_complexity()
+        
+        # Calculate total completion and get questions with their results.
+        for question, answers in questions_answers.items():
+            
+            # Get the correct answers for the question
+            correct_answers = question.answers.filter(is_correct=True)
+            
+            # If provided answers were incorrect, mark as incorrect
+            if list(correct_answers.values_list('pk', flat=True)) != list(answers.values_list('pk', flat=True)):
+                questions_completed[question] = False
+                continue
+            
+            # If correct, increment total completion by question complexity value and mark as completed
+            total_completion += percentage_value_for_complexity[question.complexity]
+            questions_completed[question] = True
+        
+        # Round up total completion
+        total_completion = round(total_completion)
+        # if total_completion > 100:
+        #     raise CompletionPercentageError('Total completion is more than 100%')
+        return total_completion if not return_questions else (total_completion, questions_completed)
+        
+    def get_complexity(self) -> int:
+        """Returns the average complexity of the questions."""
+        
+        questions = self.questions.all()
+        questions_amount = questions.count()
+
+        # If there are no questions in the quiz return 0
+        if questions_amount == 0: 
+            return 0
+
+        # Calculate sum of the complexities
+        total_complexity = sum(int(complexity) for complexity in questions.values_list('complexity', flat=True))
+        return round(total_complexity / questions_amount)
+
+    def __str__(self) -> str:
+        return self.name
     
 class Topic(MPTTModel):
+    """
+    Represents a topic.
+
+    Topics can be organized using the MPTTModel.
+    """
+    
     id = models.UUIDField(
         verbose_name='ID', 
         primary_key=True, 
         default=uuid.uuid4, 
         editable=False, 
+        help_text='Unique identifier for the topic.', 
     )
     parent = TreeForeignKey(
         to='self', 
@@ -94,6 +216,7 @@ class Topic(MPTTModel):
         blank=True, 
         related_name='children', 
         verbose_name='Parent Topic', 
+        help_text='The parent topic if this topic is a sub-topic.', 
     )
     name = models.CharField(
         verbose_name='Name', 
@@ -131,13 +254,17 @@ class Topic(MPTTModel):
         help_text='Enter a description of the topic.', 
     )
 
-    def image_tag(self):
+    class MPTTMeta:
+        order_insertion_by = ['name']
+    
+    def image_tag(self) -> SafeText | None:
+        """Returns an image HTML tag if the topic has an image."""
         if self.image:
             return mark_safe(f'<img src="{self.image.url}" />')
     image_tag.short_description = 'Image'
-    image_tag.allow_tags = True
     
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
+        """Returns the URL of the topic."""
         return reverse('quiz:topic', kwargs={'slug': self.slug})
     
     def save(self, *args, **kwargs):
@@ -148,91 +275,93 @@ class Topic(MPTTModel):
             img.thumbnail(max_size)
             img.save(self.image.path)
         super().save(*args, **kwargs)
-    
-    # TODO: sigm
-    def get_complexity(self):
-        pass
-    
-    class MPTTMeta:
-        order_insertion_by = ['name']
         
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 class Question(models.Model):
+    """
+    Represents a question in a quiz.
+
+    Each question belongs to a specific quiz and has a text and complexity level.
+    """
+    
     COMPLEXITY_CHOICES = (
         ('1', 'Easy'),
         ('2', 'Medium'),
         ('3', 'Hard'),
     )
-    TYPE_CHOICES = (
-        ('choice', 'Choice'),
+
+    quiz = models.ForeignKey(
+        to=Quiz,
+        on_delete=models.CASCADE,
+        related_name='questions',
+        verbose_name='Quiz', 
+        help_text='Choose a quiz this question belongs to.'
     )
-    
     text = models.TextField(
         verbose_name='Question Text', 
         max_length=500, 
         editable=True, 
         help_text='Enter the question.'
     )
-    quiz = models.ForeignKey(
-        to=Quiz,
-        on_delete=models.CASCADE,
-        related_name='questions',
-        help_text='Choose a quiz this question belongs to.'
-    )
     complexity = models.CharField( 
-        max_length = 20, 
-        choices = COMPLEXITY_CHOICES, 
-        default = '1'
+        verbose_name='Complexity', 
+        max_length=20, 
+        choices=COMPLEXITY_CHOICES, 
+        default='1',
+        help_text='Choose the question complexity from 1 to 3.'
     )
-    # type = models.CharField( 
-    #     max_length = 20, 
-    #     choices = COMPLEXITY_CHOICES, 
-    #     default = '1'
-    # )
-    
-    def has_multiple_answers(self) -> bool:
-        return self.answers.filter(is_correct=True).count() > 1
-    
-    def save(self, *args, **kwargs) -> None:
-        answers: QuerySet[ChoiceAnswer] = self.answers.all()
 
-        # Check if there are any answers provided at all
-        if not answers:
-            return
-        
-        # Check if there is more than 1 answer
-        if answers.count() <= 1:
-            return
-        
-        # Check if there is at least a single correct answer
-        if not answers.filter(is_correct=True).exists():
-            return
-        
-        super().save(*args, **kwargs)
-    
     class Meta:
         verbose_name = 'Question'
         verbose_name_plural = 'Questions'
         ordering = ['quiz']
+    
+    def has_multiple_answers(self) -> bool:
+        """Check if the question has multiple correct answers."""
+        return self.answers.filter(is_correct=True).count() > 1
+    
+    # TODO: make a save model check
+    # def save(self, *args, **kwargs) -> None:
+    #     answers: QuerySet[ChoiceAnswer] = self.answers.all()
+    #     if not answers or answers.count() < 2 or not answers.filter(is_correct=True).exists():
+    #         return
+
+    #     super().save(*args, **kwargs)
+    
+    def __str__(self) -> str:
+        return self.text
 
 class ChoiceAnswer(models.Model):
-    text = models.CharField(
-        verbose_name='Answer Text',
-        max_length=255,
-    )
+    """
+    Represents a choice answer for a question.
+
+    Each choice answer has it's text, belongs to a specific question and can be marked as correct or incorrect.
+    """
+    
     question = models.ForeignKey(
         to=Question,
         on_delete=models.CASCADE,
         related_name='answers',
+        verbose_name='Question',
+        help_text='Choose the question this answer belongs to.', 
+    )
+    text = models.CharField(
+        verbose_name='Answer Text',
+        max_length=255,
+        help_text='Enter the answer text.', 
     )
     is_correct = models.BooleanField(
-        verbose_name='Is Correct?',
-        default=False,
+        verbose_name='Is Correct?', 
+        default=False, 
+        help_text='Mark if this answer is correct or incorrect.', 
     )
 
     class Meta:
         verbose_name = 'Choice Answer'
         verbose_name_plural = 'Choice Answers'
         ordering = ['question']
+    
+    def __str__(self) -> str:
+        return f'{'Correct' if self.is_correct else 'Incorrect'} - {self.text}'

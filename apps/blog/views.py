@@ -10,25 +10,21 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Article, Comment
 from .forms import ArticleForm, CommentForm
 
+
 def article(request: HttpRequest, id: int) -> HttpResponse:
     article = get_object_or_404(Article.objects.select_related('author').prefetch_related('comments__author'), id=id)
     article.views += 1
     article.save(update_fields=('views',))
     form_comment = CommentForm()
-
-    # Retrieve all comments for the article
     all_comments = article.comments.all()
 
-    # Paginate comments
-    paginator = Paginator(all_comments, 10)  # Change 10 to your desired number of comments per page
+    paginator = Paginator(all_comments, 10)  
     page_number = request.GET.get('page')
     try:
         comments = paginator.page(page_number)
     except PageNotAnInteger:
-        # If page is not an integer, deliver first page
         comments = paginator.page(1)
     except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results
         comments = paginator.page(paginator.num_pages)
 
     context = {
