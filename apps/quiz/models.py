@@ -239,7 +239,7 @@ class Topic(MPTTModel):
     )
     short_description = models.TextField(
         verbose_name='Short Description', 
-        max_length='100', 
+        max_length=100, 
         blank=True, 
         null=True, 
         editable=True, 
@@ -247,7 +247,7 @@ class Topic(MPTTModel):
     )
     description = models.TextField(
         verbose_name='Description', 
-        max_length='1000', 
+        max_length=1000, 
         blank=True, 
         null=True, 
         editable=True, 

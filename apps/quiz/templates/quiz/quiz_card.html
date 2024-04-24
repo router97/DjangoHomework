@@ -1,5 +1,5 @@
 <style>
-    .card {
+    .quiz-card {
         position: relative;
         transition: height 0.5s ease-in-out;
     }
@@ -12,14 +12,14 @@
         width: 4px;
         opacity: 0.5;
     }
-    .card:hover .stripe {
+    .quiz-card:hover .stripe {
         width: 100%; 
     }
 
     .quiz-title {
         transition: margin-left 0.5s ease-in-out;
     }
-    .card:hover .quiz-title {
+    .quiz-card:hover .quiz-title {
         margin-left: 30px;
     }
 
@@ -27,7 +27,7 @@
         transition: opacity 0.5s ease-in-out, margin-left 0.7s ease-in-out;
         opacity: 0;
     }
-    .card:hover .quiz-arrow {
+    .quiz-card:hover .quiz-arrow {
         opacity: 0.8;
         margin-left: 5px;
     }
@@ -37,7 +37,7 @@
         opacity: 0;
         height: 0;
     }
-    .card:hover .quiz-description {
+    .quiz-card:hover .quiz-description {
         opacity: 1;
         margin-left: 30px;
         height: 25px;
@@ -46,7 +46,7 @@
 
 
 <a href="{{ quiz.get_absolute_url }}" class="text-decoration-none">
-    <div class="card border-0 mb-3 shadow-sm">
+    <div class="card quiz-card border-0 mb-3 shadow-sm">
         <div class="stripe {% if quiz.get_complexity == 1 %}bg-primary{% elif quiz.get_complexity == 2 %}bg-warning{% else %}bg-danger{% endif %}"></div>
         <div class="card-body">
             <div class="d-flex align-items-center">

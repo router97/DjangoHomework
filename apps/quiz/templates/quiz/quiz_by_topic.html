@@ -15,6 +15,7 @@
 <!-- Subtopics and Quizzes -->
 <div class="row mt-3">
 
+    {% if topics %}
     <!-- Subtopics -->
     <div class="col-md-3"> 
         <div class="rounded-3 bg-body-tertiary p-2"> 
@@ -26,7 +27,9 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
+    {% if object_list %}
     <!-- Quizzes -->
     <div class="col-md-8">
         {% if object_list %}
@@ -42,6 +45,7 @@
             <p>No Quizzes</p>
         {% endif %}
     </div>
+    {% endif %}
 
 </div>
 
