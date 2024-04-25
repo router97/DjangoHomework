@@ -1,3 +1,5 @@
 __pycache__
 .venv
 media
+static/admin
+static/debug_toolbar
