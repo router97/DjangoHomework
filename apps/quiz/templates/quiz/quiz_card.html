@@ -5,7 +5,8 @@
     }
     .stripe {
         position: absolute;
-        transition: width 0.3s ease-out;
+        transition: width 0.3s ease-out,
+                    opacity 0.1s;
         top: 0;
         left: 0;
         bottom: 0;
@@ -14,6 +15,9 @@
     }
     .quiz-card:hover .stripe {
         width: 100%; 
+    }
+    .quiz-card:active .stripe {
+        opacity: 0.7;
     }
 
     .quiz-title {
@@ -24,16 +28,20 @@
     }
 
     .quiz-arrow {
-        transition: opacity 0.5s ease-in-out, margin-left 0.7s ease-in-out;
+        transition: opacity 0.5s, margin-left 0.4s;
         opacity: 0;
     }
     .quiz-card:hover .quiz-arrow {
         opacity: 0.8;
         margin-left: 5px;
     }
+    .quiz-card:active .quiz-arrow {
+        opacity: 0.9;
+        margin-left: 10px;
+    }
 
     .quiz-description {
-        transition: opacity 0.5s, margin-left 0.6s ease-in-out, height 0.5s;
+        transition: opacity 0.5s, margin-left 0.55s ease-in-out, height 0.3s ease-out;
         opacity: 0;
         height: 0;
     }

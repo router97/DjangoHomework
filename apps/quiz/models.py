@@ -94,51 +94,70 @@ class Quiz(models.Model):
         return reverse('quiz:quiz', kwargs={'topic_slug': self.topic.slug, 'slug': self.slug})
     
     # FIXME: Fix finding percentage value for complexity
+    # def get_percentage_value_for_complexity(self) -> dict:
+    #     total_percentage = 0
+    #     amount_of_complexities = {
+    #         '1': 0, 
+    #         '2': 0, 
+    #         '3': 0, 
+    #     }
+    #     percentage_value_for_complexity = {
+    #         '1': 0, 
+    #         '2': 0, 
+    #         '3': 0, 
+    #     }
+    #     weights = {
+    #         '1': 1, 
+    #         '2': 1.5, 
+    #         '3': 2, 
+    #     }
+        
+    #     # Find total questions and amount of questions of each complexity
+    #     total_questions = self.questions.count()
+    #     for complexity in self.questions.all().values_list('complexity', flat=True):
+    #         amount_of_complexities[complexity] += 1
+    #     assert total_questions == sum(value for value in amount_of_complexities.values()), "Amount of questions in each quantity doesn't equal the total amount."
+        
+    #     # FIXME: Find percentage value for complexity
+    #     for complexity, count in amount_of_complexities.items():
+            
+    #         # If all questions are of the same complexity
+    #         if count == total_questions:
+    #             percentage_value_for_complexity[complexity] = 100 / count
+    #             total_percentage = 100
+    #             break
+            
+    #         # If there are no questions of such complexity
+    #         elif count == 0:
+    #             continue
+            
+    #         percentage_value_for_complexity[complexity] = (count * weights[complexity] / total_questions) * 100
+    #         total_percentage += percentage_value_for_complexity[complexity]
+        
+    #     # Round up percentage values for complexity
+    #     percentage_value_for_complexity = {key: round(value, 1) for key, value in percentage_value_for_complexity.items()}
+    #     print(percentage_value_for_complexity)
+    #     return percentage_value_for_complexity
+
     def get_percentage_value_for_complexity(self) -> dict:
         total_percentage = 0
-        amount_of_complexities = {
-            '1': 0, 
-            '2': 0, 
-            '3': 0, 
-        }
         percentage_value_for_complexity = {
             '1': 0, 
             '2': 0, 
             '3': 0, 
         }
-        weights = {
-            '1': 1, 
-            '2': 1.5, 
-            '3': 2, 
+        
+        total_questions = self.questions.count()
+
+        value = round(100 / total_questions, 1)
+        percentage_value_for_complexity = {
+            '1': value,
+            '2': value,
+            '3': value,
         }
         
-        # Find total questions and amount of questions of each complexity
-        total_questions = self.questions.count()
-        for complexity in self.questions.all().values_list('complexity', flat=True):
-            amount_of_complexities[complexity] += 1
-        assert total_questions == sum(value for value in amount_of_complexities.values()), "Amount of questions in each quantity doesn't equal the total amount."
-        
-        # FIXME: Find percentage value for complexity
-        for complexity, count in amount_of_complexities.items():
-            
-            # If all questions are of the same complexity
-            if count == total_questions:
-                percentage_value_for_complexity[complexity] = 100 / count
-                total_percentage = 100
-                break
-            
-            # If there are no questions of such complexity
-            elif count == 0:
-                continue
-            
-            percentage_value_for_complexity[complexity] = (count * weights[complexity] / total_questions) * 100
-            total_percentage += percentage_value_for_complexity[complexity]
-        
-        # Round up percentage values for complexity
-        percentage_value_for_complexity = {key: round(value, 1) for key, value in percentage_value_for_complexity.items()}
-        print(percentage_value_for_complexity)
         return percentage_value_for_complexity
-
+    
     def get_completion(self, questions_answers: dict, return_questions: bool = False) -> int | tuple[int, dict]:
         """Calculate completion percentage.
 
@@ -147,7 +166,7 @@ class Quiz(models.Model):
             return_questions (bool, optional): Whether to return detailed question completion status. Defaults to False.
         
         Raises:
-            CompletionPercentageError: If the completion percent is more than 100%.
+            CompletionPercentageError: If the completion percent calculated is more than 100%.
         
         Returns:
             int | tuple[int, dict]: Completion percentage or (percentage, question status).
@@ -164,7 +183,7 @@ class Quiz(models.Model):
             correct_answers = question.answers.filter(is_correct=True)
             
             # If provided answers were incorrect, mark as incorrect
-            if list(correct_answers.values_list('pk', flat=True)) != list(answers.values_list('pk', flat=True)):
+            if set(correct_answers.values_list('pk', flat=True)) != set(answers.values_list('pk', flat=True)):
                 questions_completed[question] = False
                 continue
             
@@ -174,10 +193,10 @@ class Quiz(models.Model):
         
         # Round up total completion
         total_completion = round(total_completion)
-        # if total_completion > 100:
-        #     raise CompletionPercentageError('Total completion is more than 100%')
+        if total_completion > 100:
+            raise CompletionPercentageError('Total completion is more than 100%')
         return total_completion if not return_questions else (total_completion, questions_completed)
-        
+    
     def get_complexity(self) -> int:
         """Returns the average complexity of the questions."""
         

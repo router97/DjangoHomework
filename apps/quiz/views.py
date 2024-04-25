@@ -1,4 +1,5 @@
 from uuid import UUID
+from random import sample
 
 from django.shortcuts import get_object_or_404, render, HttpResponse
 from django.http import HttpRequest
@@ -12,9 +13,19 @@ class TopicListView(ListView):
     model = Topic
     template_name = 'quiz/index.html'
     context_object_name = 'topics' 
+    paginate_by = 6
     
     def get_queryset(self):
         return Topic.objects.filter(parent=None)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        quizzes = Quiz.objects.all()
+        quizzes_amount = quizzes.count()
+        
+        context['quizzes'] = sample(list(quizzes), 6 if 6 < quizzes_amount else quizzes_amount)
+        context['quizzes_latest'] = quizzes.order_by('created_at')[:6]
+        return context
 
 class QuizByTopicView(ListView):
     template_name = 'quiz/quiz_by_topic.html'
