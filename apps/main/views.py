@@ -1,5 +1,5 @@
-from django.shortcuts import render, HttpResponse
-from django.http import HttpRequest
+from django.shortcuts import render, redirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 
 def about(request: HttpRequest) -> HttpResponse:
@@ -7,3 +7,6 @@ def about(request: HttpRequest) -> HttpResponse:
 
 def custom_404(request, exception):
     return render(request, '404.html', status=404)
+
+def index(request: HttpRequest) -> HttpResponseRedirect:
+    return redirect('blog:index')

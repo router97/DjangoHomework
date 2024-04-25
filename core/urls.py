@@ -12,7 +12,7 @@ urlpatterns = [
     path('admin/', admin.site.urls, name = 'admin'),
     
     path('', include('apps.main.urls', namespace = 'main')),
-    path('', include('apps.blog.urls', namespace='blog')),
+    path('blog/', include('apps.blog.urls', namespace='blog')),
     path('', include('apps.members.urls', namespace='members')),
     path('order/', include('apps.order.urls', namespace='order')),
     path('catalog/', include('apps.catalog.urls', namespace='catalog')),

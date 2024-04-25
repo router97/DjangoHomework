@@ -5,7 +5,7 @@
     <div class="container">
 
         <!-- Logo -->
-        <a class="navbar-brand" href="{% url 'blog:index' %}">
+        <a class="navbar-brand" href="{% url 'main:index' %}">
             <img src="{% static 'favicon/favicon-32x32.png' %}">
             DjangoHomework
         </a>
@@ -54,10 +54,10 @@
             {% else %}
                 <ul class="navbar-nav mb-lg-0">
                     <li class="nav-item">
-                        <a class="btn btn-outline-primary" href={% url "members:login" %}><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                        <a class="btn btn-outline-light" style="border: none;" href={% url "members:login" %}>Sign In</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-outline-success" href={% url "members:register" %}><i class="bi bi-person-plus"></i> Register</a>
+                        <a class="btn btn-outline-light" href={% url "members:register" %}>Sign Up</a>
                     </li>
                 </ul>
             {% endif %}
