@@ -1,50 +1,150 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}{{ topic.name }}{% endblock title %}
+{% block title %}Quizzes{% endblock title %}
 
 {% block content %}
 
-<!-- Topic Info -->
-<div class="mt-3 rounded-3 bg-body-dark p-4">
-    <h1 class="display-1">{{ topic.name }}</h1>
-    <small class="text-muted">{{ topic.description }}</small>
-</div>
-
-<hr class="my-4">
-
-<!-- Subtopics and Quizzes -->
-<div class="mt-3 rounded-3 bg-body-dark p-4">
-    <div class="row mt-3 d-flex justify-content-between">
-
-        {% if object_list %}
-        <!-- Quizzes -->
-        <div class="col-md-8">
-            <div class="card mt-3 rounded-3 bg-body-secondary p-4">
-                <h5 class="card-title display-5 text-center">Quizzes <i class="bi bi-clipboard"></i></h5>
-                <ul class="list-group mt-3">
-                    {% for quiz in object_list %}
-                        {% include "quiz/quiz_card.html" with quiz=quiz %}
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        {% endif %}
-
-        {% if topics %}
-        <!-- Subtopics -->
-        <div class="col-md-3">
-            <div class="card mt-3 rounded-3 bg-body-secondary p-4"> 
-                <h5 class="card-title display-5 text-center">{{ topic.name }} Topics <i class="bi bi-tags"></i></h5>
-                <div class="mt-2"> 
-                    {% for subtopic in topics %}
-                        {% include "quiz/topic_card.html" with topic=subtopic %}
-                    {% endfor %}
+<!-- Topics -->
+{% if object_list %}
+<div class="mx-4 mt-4 rounded-3 bg-body-dark p-2">
+    <div class="card rounded-3 bg-body-secondary p-2"> 
+        <div class="row mt-3 d-flex justify-content-around">
+            <h3 class="card-title display-3 text-center">{{ topic.name }}Topics <i class="bi bi-tags"></i></h3>
+            {% for topic in object_list %}
+                <div class="col-md-2">
+                    {% include "quiz/topic_card.html" with topic=topic %}
                 </div>
-            </div>
+            {% endfor %}
         </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1"><i class="bi bi-chevron-bar-left"></i></a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="bi bi-chevron-left"></i></a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <a class="page-link" href="?page={{ page_obj.number }}">{{ page_obj.number }}</a>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="bi bi-chevron-right"></i></a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"><i class="bi bi-chevron-bar-right"></i></a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
         {% endif %}
+        <!-- Pagination -->
 
     </div>
 </div>
+{% endif %}
+<!-- Topics -->
+
+
+<!-- Quizzes -->
+{% if quizzes %}
+<div class="mx-4 mt-4 rounded-3 bg-body-dark p-2">
+    <div class="row mt-3 d-flex justify-content-between">
+
+        <!-- Random Quizzes -->
+        <div class="col-md-7">
+            <div class="card mt-3 rounded-3 bg-body-secondary p-4">
+                <h5 class="card-title display-5 text-center">
+                    {{ topic.name }} Quizzes 
+                    <i class="bi bi-clipboard"></i>
+                    <a href={% url 'quiz:quizzes' topic.slug %}>
+                        <small class="text-muted" style="font-size: 20px;">See more</small>
+                    </a>
+                </h5>
+                
+                <ul class="list-group mt-3">
+                    {% for quiz in quizzes %}
+                        {% include "quiz/quiz_card.html" with quiz=quiz %}
+                    {% endfor %}
+
+                    <!-- Top Quizzes -->
+                    <div class="card rounded-3 bg-body-tertiary p-0">
+                        <h5 class="card-title display-5 text-center">Top <i class="bi bi-star"></i></h5>
+                        
+                        {% for quiz in quizzes_top %}
+                            {% include "quiz/quiz_card.html" with quiz=quiz %} 
+                        {% endfor %}
+                        
+                    </div>
+                    <!-- Top Quizzes -->
+
+                </ul>
+            </div>
+        </div>
+        <!-- Random Quizzes -->
+
+        <!-- Latest Quizzes -->
+        <div class="col-md-5"> 
+            <div class="card mt-3 rounded-3 bg-body-secondary p-4">
+                <h5 class="card-title display-5 text-center">Latest <i class="bi bi-search"></i></h5>
+                <div class="list-group mt-3"> 
+                    {% for quiz in quizzes_latest %}
+                        {% include "quiz/quiz_card.html" with quiz=quiz %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="card mt-3 rounded-3 bg-body-secondary p-2">
+                <div class="d-flex justify-content-around">
+                    <div class="text-center">
+                        <h5 class="display-5">{{ stats.quizzes }}</h5>
+                        <p class="text-muted" style="font-size: 20px;">Quizzes</p>
+                    </div>
+                    <div class="text-center">
+                        <h5 class="display-5">{{ stats.topics }}</h5>
+                        <p class="text-muted" style="font-size: 20px;">Topics</p>
+                    </div>
+                    <div class="text-center">
+                        <h5 class="display-5">{{ stats.creators }}</h5>
+                        <p class="text-muted" style="font-size: 20px;">Creators</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Stats -->
+
+        </div>
+        <!-- Latest Quizzes -->
+
+    </div>
+</div>
+{% endif %}
+<!-- Quizzes -->
+
+
+<!-- Creators -->
+{% if creators %}
+<div class="mt-3 rounded-3 bg-body-dark p-4">
+    <div class="card mt-3 rounded-3 bg-body-secondary p-4">
+        <h5 class="card-title display-5 text-center">{{ topic.name }} Creators <i class="bi bi-person-badge"></i></h5>
+        <div class="mt-3 d-flex justify-content-around">
+            {% for creator in creators %}
+                {% include 'quiz/creator_card.html' with user=creator %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- Creators -->
+
 
 {% endblock content %}

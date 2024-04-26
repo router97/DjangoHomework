@@ -83,6 +83,12 @@ class Quiz(models.Model):
         auto_now=True, 
         help_text='The date and time when the quiz was last edited.', 
     )
+    completions = models.PositiveIntegerField(
+        verbose_name='Completions Count', 
+        blank=True,
+        default=0,
+        help_text='Amount of times the quiz has been completed.'
+    )
     
     class Meta:
         verbose_name = 'Quiz'

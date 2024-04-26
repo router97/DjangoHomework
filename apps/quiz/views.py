@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, render, HttpResponse
 from django.http import HttpRequest
 from django.views.generic import ListView, DetailView
 from django.views.decorators.http import require_POST
+from django.contrib.auth.models import User
 
 from .models import Topic, Quiz, ChoiceAnswer
 
@@ -22,29 +23,101 @@ class TopicListView(ListView):
         context = super().get_context_data(**kwargs)
         quizzes = Quiz.objects.all()
         quizzes_amount = quizzes.count()
+        creators_ids = quizzes.values('author').distinct()
+        creators = User.objects.filter(id__in=creators_ids)
         
-        context['quizzes'] = sample(list(quizzes), 6 if 6 < quizzes_amount else quizzes_amount)
+        context['quizzes'] = sample(list(quizzes), 4 if 4 < quizzes_amount else quizzes_amount)
         context['quizzes_latest'] = quizzes.order_by('created_at')[:6]
+        context['quizzes_top'] = quizzes.order_by('-completions')[:3]
+        
+        context['creators'] = creators
+        context['stats'] = {
+            'quizzes': quizzes_amount,
+            'topics': Topic.objects.count(),
+            'creators': creators.count(),
+        }
         return context
 
-class QuizByTopicView(ListView):
+# class QuizByTopicView(ListView):
+#     template_name = 'quiz/quiz_by_topic.html'
+#     context_object_name = 'quizzes'
+    
+#     def get_queryset(self):
+#         topic = self.kwargs.get('slug')
+#         descendants = Topic.objects.filter(slug=topic).get_descendants(include_self=True)
+#         queryset = Quiz.objects.filter(topic__in=descendants)
+#         return queryset
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         topic_slug = self.kwargs['slug']
+#         topic = get_object_or_404(Topic, slug=topic_slug)
+#         context['topic'] = topic
+#         context['topics'] = Topic.objects.filter(parent=topic)
+#         return context
+
+class SubTopicListView(ListView):
+    model = Topic
     template_name = 'quiz/quiz_by_topic.html'
-    context_object_name = 'quizzes'
+    context_object_name = 'topics'
+    paginate_by = 6
     
     def get_queryset(self):
-        topic = self.kwargs.get('slug')
-        descendants = Topic.objects.filter(slug=topic).get_descendants(include_self=True)
-        queryset = Quiz.objects.filter(topic__in=descendants)
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
         topic_slug = self.kwargs['slug']
         topic = get_object_or_404(Topic, slug=topic_slug)
+        queryset = Topic.objects.filter(parent=topic)
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        topic_slug = self.kwargs['slug']
+        topic = get_object_or_404(Topic, slug=topic_slug)
+        
+        descendants = topic.get_descendants(include_self=True)
+        quizzes = Quiz.objects.filter(topic__in=descendants)
+        
+        quizzes_amount = quizzes.count()
+        creators_ids = quizzes.values('author').distinct()
+        creators = User.objects.filter(id__in=creators_ids)
+        
         context['topic'] = topic
-        context['topics'] = Topic.objects.filter(parent=topic)
+        context['quizzes'] = sample(list(quizzes), 4 if 4 < quizzes_amount else quizzes_amount)
+        context['quizzes_latest'] = quizzes.order_by('created_at')[:6]
+        context['quizzes_top'] = quizzes.order_by('-completions')[:3]
+        
+        context['creators'] = creators
+        context['stats'] = {
+            'quizzes': quizzes_amount,
+            'topics': descendants.count()-1,
+            'creators': creators.count(),
+        }
         return context
 
+class QuizzesByTopicListView(ListView):
+    model = Quiz
+    template_name = 'quiz/quizzes.html'
+    context_object_name = 'quizzes'
+    paginate_by = 20
+    
+    def get_queryset(self):
+        topic_slug = self.kwargs['topic_slug']
+        topic = get_object_or_404(Topic, slug=topic_slug)
+        
+        descendants = topic.get_descendants(include_self=True)
+        queryset = Quiz.objects.filter(topic__in=descendants)
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        topics = Topic.objects.all()
+        topics_amount = topics.count()
+        
+        context['topics'] = sample(list(topics), 6 if 6 < topics_amount else topics_amount)
+        
+        return context
+    
 class QuizView(DetailView):
     model = Quiz
     template_name = 'quiz/quiz.html'
@@ -90,5 +163,8 @@ def submit_answer(request: HttpRequest, id: UUID) -> HttpResponse:
         'percentage_for_complexity': percentage_for_complexity,
         'questions_result': questions_result,
     }
+    
+    quiz.completions += 1
+    quiz.save(update_fields=['completions'])
     
     return render(request, 'quiz/result.html', context)
