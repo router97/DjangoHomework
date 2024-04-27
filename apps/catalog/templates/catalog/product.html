@@ -45,6 +45,7 @@
                             </p>
                         </div>
                         <div class="col d-flex align-items-center">
+                            
                             <!-- Add to Cart -->
                             {% if product.quantity %}
                             <form action="{% url 'order:add_to_cart' %}" method="get">
@@ -56,8 +57,10 @@
                                 </div>
                             </form>
                             {% else %}
-                                <div class="alert alert-warning">Товар закінчився</div>
+                                <div class="alert alert-warning">No Products Available</div>
                             {% endif %}
+                            <!-- Add to Cart -->
+
                         </div>
                     </div>
                 </div>

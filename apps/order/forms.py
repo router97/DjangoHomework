@@ -1,22 +1,23 @@
+from typing import Any
+from uuid import UUID
+
 from django import forms
 
-from .models import Cart
+from .models import Cart, CartProduct
+from ..catalog.models import Product
 
 
 class CartAddProductForm(forms.ModelForm):
     class Meta:
-        model = Cart
-        fields = ('user', 'product', 'quantity')
-        widgets = {
-            'user': forms.HiddenInput(), 
-            'product': forms.HiddenInput(), 
-            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 100, 'value': 1})
-        }
+        model = CartProduct
+        fields = ('cart', 'product', 'quantity')
         
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
+        print(f'CLEANED DATA: {cleaned_data}')
         product = cleaned_data.get('product')
-        quantity = cleaned_data.get('quantity')
+        print(f'TYPE OF PRODUCT FROM FORM "{type(product)}"')
+        quantity: int = cleaned_data.get('quantity')
         
         if product.quantity < quantity:
             raise forms.ValidationError('Not enough product in store')

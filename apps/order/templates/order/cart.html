@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .btn-checkout {
+        transition: background-color 0.2s,
+                    border-color 0.2s;
+        background-color: #7a34eb;
+        width: 100%;
+        border-color: #7a34eb;
+        border-style: solid;
+        border-radius: 2px;
+    }
+    .btn-checkout:hover {
+        background-color: #622abd;
+        border-color: #622abd;
+    }
+    .btn-checkout:active {
+        background-color: #37186b;
+        border-color: #37186b;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row">
+
+        <!-- Cart -->
+        <div class="col-lg-8">
+            <div class="card rounded-3 bg-body-tertiary shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title display-5 text-center mb-4">Your Cart <i class="bi bi-basket-fill"></i></h5>
+
+                    <!-- Products Table -->
+                    <table class="table text-white">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">PRODUCT DETAILS</th>
+                                <th scope="col">QUANTITY</th>
+                                <th scope="col">PRICE</th>
+                                <th scope="col">TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cart_product in cart.products.all %}
+                                {% include 'order/cart_product_card.html' with cart_product=cart_product %}                                    
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <!-- Products Table -->
+
+                    <a href="{% url 'catalog:index' %}"><i class="bi bi-arrow-return-left"></i> Continue shopping</a>
+
+                </div>
+            </div>
+        </div>
+        <!-- Cart -->
+
+        <!-- Order Summary -->
+        <div class="col-lg-4">
+            <div class="card rounded-3 bg-body-tertiary shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title display-6 mx-3 text-center">Order Summary <i class="bi bi-receipt"></i></h6>
+                    
+                    <div class="card-body">
+
+                        <hr class="mb-4">
+
+                        <!-- Amount of items and their combined price -->
+                        <div class="d-flex justify-content-between mb-4">
+                            <h3 class="mb-2">ITEMS {{ cart.products.count }}</h3>
+                            <h3 class="mb-2">₴ {{ cart.get_total_price }}</h3>
+                        </div>
+                        <!-- Amount of items and their combined price -->
+
+                        <!-- TODO: Shipping -->
+                        <h3>SHIPPING</h3>
+                        <select class="form-select mb-4" aria-label="Default select example">
+                            <option selected>Choose Shipping</option>
+                            <option value="1">DDOS KING DELIVERY</option>
+                            <option value="2">EGOR LIFIRENKO INC.</option>
+                            <option value="3">P. BATEMAN DELIVERY SVC.</option>
+                        </select>
+                        <!-- TODO: Shipping -->
+
+                        <!-- TODO: Promo Code -->
+                        <h3>PROMO CODE</h3>
+                        <input class="form-control" placeholder="Enter your code">
+                        <!-- TODO: Promo Code -->
+
+                        <hr class="my-4">
+
+                        <!-- Total Cost -->
+                        <div class="d-flex justify-content-between mb-3">
+                            <h3 class="mb-2">TOTAL COST</h3>
+                            <h3 class="mb-2">₴ {{ cart.get_total_price }}</h3>
+                        </div>
+                        <!-- Total Cost -->
+
+                        <!-- Checkout -->
+                        <button class="btn-checkout p-1">
+                            CHECKOUT
+                        </button>
+                        <!-- Checkout -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Order Summary -->
+
+    </div>
+</div>
+<!-- Cart -->
+
+{% endblock content %}

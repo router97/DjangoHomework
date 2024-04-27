@@ -27,7 +27,7 @@ class TopicListView(ListView):
         creators = User.objects.filter(id__in=creators_ids)
         
         context['quizzes'] = sample(list(quizzes), 4 if 4 < quizzes_amount else quizzes_amount)
-        context['quizzes_latest'] = quizzes.order_by('created_at')[:6]
+        context['quizzes_latest'] = quizzes.order_by('-created_at')[:6]
         context['quizzes_top'] = quizzes.order_by('-completions')[:3]
         
         context['creators'] = creators
@@ -37,24 +37,6 @@ class TopicListView(ListView):
             'creators': creators.count(),
         }
         return context
-
-# class QuizByTopicView(ListView):
-#     template_name = 'quiz/quiz_by_topic.html'
-#     context_object_name = 'quizzes'
-    
-#     def get_queryset(self):
-#         topic = self.kwargs.get('slug')
-#         descendants = Topic.objects.filter(slug=topic).get_descendants(include_self=True)
-#         queryset = Quiz.objects.filter(topic__in=descendants)
-#         return queryset
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         topic_slug = self.kwargs['slug']
-#         topic = get_object_or_404(Topic, slug=topic_slug)
-#         context['topic'] = topic
-#         context['topics'] = Topic.objects.filter(parent=topic)
-#         return context
 
 class SubTopicListView(ListView):
     model = Topic
@@ -83,7 +65,7 @@ class SubTopicListView(ListView):
         
         context['topic'] = topic
         context['quizzes'] = sample(list(quizzes), 4 if 4 < quizzes_amount else quizzes_amount)
-        context['quizzes_latest'] = quizzes.order_by('created_at')[:6]
+        context['quizzes_latest'] = quizzes.order_by('-created_at')[:6]
         context['quizzes_top'] = quizzes.order_by('-completions')[:3]
         
         context['creators'] = creators
@@ -111,9 +93,14 @@ class QuizzesByTopicListView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        topic_slug = self.kwargs['topic_slug']
+        topic = get_object_or_404(Topic, slug=topic_slug)
+        
         topics = Topic.objects.all()
         topics_amount = topics.count()
         
+        context['topic'] = topic
         context['topics'] = sample(list(topics), 6 if 6 < topics_amount else topics_amount)
         
         return context

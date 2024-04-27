@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from django.urls import reverse
+from django.db.models import QuerySet
 from django.utils.safestring import SafeText, mark_safe
 from django.contrib.auth.models import User
 
@@ -32,7 +33,6 @@ class Quiz(models.Model):
         on_delete=models.CASCADE,
         related_name='quizzes', 
         verbose_name='Topic', 
-        blank=True, 
         null=True, 
         help_text='Choose the topic of the quiz.', 
     )
@@ -99,71 +99,23 @@ class Quiz(models.Model):
         """Returns the URL of the quiz."""
         return reverse('quiz:quiz', kwargs={'topic_slug': self.topic.slug, 'slug': self.slug})
     
-    # FIXME: Fix finding percentage value for complexity
-    # def get_percentage_value_for_complexity(self) -> dict:
-    #     total_percentage = 0
-    #     amount_of_complexities = {
-    #         '1': 0, 
-    #         '2': 0, 
-    #         '3': 0, 
-    #     }
-    #     percentage_value_for_complexity = {
-    #         '1': 0, 
-    #         '2': 0, 
-    #         '3': 0, 
-    #     }
-    #     weights = {
-    #         '1': 1, 
-    #         '2': 1.5, 
-    #         '3': 2, 
-    #     }
-        
-    #     # Find total questions and amount of questions of each complexity
-    #     total_questions = self.questions.count()
-    #     for complexity in self.questions.all().values_list('complexity', flat=True):
-    #         amount_of_complexities[complexity] += 1
-    #     assert total_questions == sum(value for value in amount_of_complexities.values()), "Amount of questions in each quantity doesn't equal the total amount."
-        
-    #     # FIXME: Find percentage value for complexity
-    #     for complexity, count in amount_of_complexities.items():
-            
-    #         # If all questions are of the same complexity
-    #         if count == total_questions:
-    #             percentage_value_for_complexity[complexity] = 100 / count
-    #             total_percentage = 100
-    #             break
-            
-    #         # If there are no questions of such complexity
-    #         elif count == 0:
-    #             continue
-            
-    #         percentage_value_for_complexity[complexity] = (count * weights[complexity] / total_questions) * 100
-    #         total_percentage += percentage_value_for_complexity[complexity]
-        
-    #     # Round up percentage values for complexity
-    #     percentage_value_for_complexity = {key: round(value, 1) for key, value in percentage_value_for_complexity.items()}
-    #     print(percentage_value_for_complexity)
-    #     return percentage_value_for_complexity
+    #TODO: Update algorithm to calculate with complexity weights (value is bigger if the complexity is bigger)
+    def get_percentage_value_for_complexity(self) -> dict[str, float]:
+        """Returns a dictionary of percentage value of a question of each complexity.
 
-    def get_percentage_value_for_complexity(self) -> dict:
-        total_percentage = 0
-        percentage_value_for_complexity = {
-            '1': 0, 
-            '2': 0, 
-            '3': 0, 
-        }
+        Returns:
+            dict[str, float]: Key is complexity, value is percentage amount for completing a question of such complexity.
+        """
         
-        total_questions = self.questions.count()
-
-        value = round(100 / total_questions, 1)
-        percentage_value_for_complexity = {
-            '1': value,
-            '2': value,
-            '3': value,
+        total_questions_count: int = self.questions.count()
+        percentage_value: float = round(100 / total_questions_count, 1)
+        percentage_value_for_complexity: dict[str, float] = {
+            '1': percentage_value, 
+            '2': percentage_value, 
+            '3': percentage_value, 
         }
-        
         return percentage_value_for_complexity
-    
+
     def get_completion(self, questions_answers: dict, return_questions: bool = False) -> int | tuple[int, dict]:
         """Calculate completion percentage.
 
@@ -292,7 +244,14 @@ class Topic(MPTTModel):
         """Returns the URL of the topic."""
         return reverse('quiz:topic', kwargs={'slug': self.slug})
     
-    def save(self, *args, **kwargs):
+    def get_related_topics(self) -> QuerySet:
+        """Return queryset of related topics (topics with the same parent as the current topic)."""
+        if self.parent:
+            return self.parent.get_children().exclude(pk=self.pk)
+        else:
+            return Topic.objects.filter(parent__isnull=True).exclude(pk=self.pk)
+    
+    def save(self, *args, **kwargs) -> None:
         if self.image:
             super().save(*args, **kwargs)
             img = Image.open(self.image.path)
@@ -347,14 +306,14 @@ class Question(models.Model):
         """Check if the question has multiple correct answers."""
         return self.answers.filter(is_correct=True).count() > 1
     
-    # TODO: make a save model check
-    # def save(self, *args, **kwargs) -> None:
-    #     answers: QuerySet[ChoiceAnswer] = self.answers.all()
-    #     if not answers or answers.count() < 2 or not answers.filter(is_correct=True).exists():
-    #         return
+    def get_correct_answers(self) -> QuerySet:
+        """Return queryset of correct choice answers for the question."""
+        return self.answers.filter(is_correct=True)
 
-    #     super().save(*args, **kwargs)
-    
+    def get_incorrect_answers(self) -> QuerySet:
+        """Return queryset of incorrect choice answers for the question."""
+        return self.answers.filter(is_correct=False)
+
     def __str__(self) -> str:
         return self.text
 

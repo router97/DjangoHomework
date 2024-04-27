@@ -9,7 +9,7 @@
 <div class="mx-4 mt-4 rounded-3 bg-body-dark p-2">
     <div class="card rounded-3 bg-body-secondary p-2"> 
         <div class="row mt-3 d-flex justify-content-around">
-            <h3 class="card-title display-3 text-center">Topics <i class="bi bi-tags"></i></h3>
+            <h3 class="card-title display-3 text-center">See Other Topics <i class="bi bi-tags"></i></h3>
             {% for topic in topics %}
                 <div class="col-md-2">
                     {% include "quiz/topic_card.html" with topic=topic %}
@@ -28,7 +28,7 @@
     <div class="row mt-3 d-flex justify-content-between">
         <div class="col">
             <div class="card mt-3 rounded-3 bg-body-secondary p-4">
-                <h5 class="card-title display-5 text-center">Quizzes <i class="bi bi-clipboard"></i></h5>
+                <h5 class="card-title display-5 text-center">{{ topic.name }} Quizzes <i class="bi bi-clipboard"></i></h5>
                 <ul class="row row-cols-2">
                     {% for quiz in object_list %}
                         {% include "quiz/quiz_card.html" with quiz=quiz %}
