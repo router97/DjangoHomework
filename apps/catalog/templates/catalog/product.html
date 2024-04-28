@@ -48,6 +48,7 @@
                             
                             <!-- Add to Cart -->
                             {% if product.quantity %}
+                            {% if in_cart %}
                             <form action="{% url 'order:add_to_cart' %}" method="get">
                                 {% csrf_token %}
                                 <input type="hidden" name="product" value="{{ product.id }}">
@@ -57,8 +58,12 @@
                                 </div>
                             </form>
                             {% else %}
+                                <div class="alert alert-info">Already In Cart.</div>
+                            {% endif %}
+                            {% else %}
                                 <div class="alert alert-warning">No Products Available</div>
                             {% endif %}
+                            
                             <!-- Add to Cart -->
 
                         </div>

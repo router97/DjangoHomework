@@ -1,7 +1,9 @@
+from typing import Any
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView
 
 from .models import Catalog, Product
+from ..order.models import Cart, CartProduct
 
 
 class CatalogListView(ListView):
@@ -35,3 +37,10 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'catalog/product.html'
     context_object_name = 'product'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cart: Cart = self.request.user.cart
+        
+        context['in_cart'] = not cart.products.filter(product__slug=self.kwargs['slug']).exists()
+        return context
