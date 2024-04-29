@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Quizzes{% endblock title %}
+
+{% block content %}
+
+<!-- Topics -->
+{% if object_list %}
+<div class="mx-4 mt-4 rounded-3 bg-body-dark p-2">
+    <div class="card rounded-3 bg-body-secondary p-2"> 
+        <div class="row mt-3 d-flex justify-content-around">
+            <h3 class="card-title display-3 text-center">See Other Topics <i class="bi bi-tags"></i></h3>
+            {% for topic in topics %}
+                <div class="col-md-2">
+                    {% include "quiz/topic_card.html" with topic=topic %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- Topics -->
+
+
+<!-- Quizzes -->
+{% if quizzes %}
+<div class="mx-4 mt-4 rounded-3 bg-body-dark p-2">
+    <div class="row mt-3 d-flex justify-content-between">
+        <div class="col">
+            <div class="card mt-3 rounded-3 bg-body-secondary p-4">
+                <h5 class="card-title display-5 text-center">{{ topic.name }} Quizzes <i class="bi bi-clipboard"></i></h5>
+                <ul class="row row-cols-2">
+                    {% for quiz in object_list %}
+                        {% include "quiz/quiz_card.html" with quiz=quiz %}
+                    {% endfor %}
+                </ul>
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1"><i class="bi bi-chevron-bar-left"></i></a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="bi bi-chevron-left"></i></a>
+                            </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <a class="page-link" href="?page={{ page_obj.number }}">{{ page_obj.number }}</a>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="bi bi-chevron-right"></i></a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"><i class="bi bi-chevron-bar-right"></i></a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                <!-- Pagination -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- Quizzes -->
+
+
+{% endblock content %}

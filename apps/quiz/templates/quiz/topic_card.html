@@ -1,0 +1,23 @@
+<style>
+    .topic-card {
+        transition: transform 0.2s, box-shadow 0.2s, filter 0.05s;
+        position: relative;
+    }
+    .topic-card:hover {
+        transform: scale(1.01);
+        box-shadow: 0 0 8px 1px rgba(0, 0, 0, 0.5);
+    }
+    .topic-card:active {
+        filter: brightness(80%);
+        transform: scale(0.99);
+    }
+</style>
+
+<a href="{{ topic.get_absolute_url }}" class="text-decoration-none">
+    <div class="card topic-card">
+        <img class="card-img" src="{% if topic.image %}{{ topic.image.url }}{% else %}https://image-placeholder.com/images/actual-size/450x300.png{% endif %}" alt="{{ topic.name }}">
+        <div class="card-body text-center">
+            <h5 class="card-title">{{ topic.name }}</h5>
+        </div>
+    </div>
+</a>

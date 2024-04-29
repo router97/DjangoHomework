@@ -165,14 +165,12 @@ class ProductCategory(models.Model):
         verbose_name='Product', 
         help_text='The product associated with this category.'
     )
-    
     category = models.ForeignKey(
         to=Catalog, 
         on_delete=models.CASCADE, 
         verbose_name='Category', 
         help_text='The category for this product.'
     )
-    
     is_main = models.BooleanField(
         verbose_name='Main Category', 
         default=False, 

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% load quiz_filters %}
+
+{% block title %}{{ quiz.name }} Results{% endblock title %}
+
+{% block content %}
+
+
+<br>
+
+<div class="card align-center border-info" style="width: 90%; margin: auto;">
+    <div class="card-body">
+        <h3 class="card-title">{{ quiz.name }}</h3>
+        <p class="card-text">{{ quiz.description }}</p>
+        <p>Grade: {{ completion }}%</p>
+    </div>
+</div>
+
+<br>
+
+<div class="card border-info" style="width: 90%; margin: auto;">
+    <a class="btn btn-primary" href={% url 'quiz:index' %}>
+        Home
+    </a>
+</div>
+
+<br>
+
+<!-- Questions -->
+{% for question in quiz.questions.all %}
+    <div class={% if questions_result|hash:question %}"card border-success mb-3"{% else %}"card border-danger mb-3"{% endif %} style="width: 90%; margin: auto;">
+
+        <div class="card-header" style="white-space: pre;">{{ question.text }}</div>
+        
+
+        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+
+            <!-- Answers -->
+            <ul class="list-group list-group-flush">
+
+                <!-- Answers -->
+                {% for answer in question.answers.all %}
+                <li class="list-group-item">
+                    <input class="form-check-input" type="{% if question.has_multiple_answers %}checkbox{% else %}radio{% endif %}" name="answer{{ question.id }}" value="{{ answer.pk }}" disabled {% if answer in picked %}checked{% endif %}>
+                    <p style="display:inline" class="{% if answer.is_correct %}text-success{% else %}text-danger{%endif%}">{{ answer.text }}</p>
+                </li>
+                {% endfor %}
+
+            
+            </ul>
+        </div>
+        <div class="card-footer">{% if questions_result|hash:question %}{{ percentage_for_complexity|hash:question.complexity }}{% else %}0{% endif %}%</div>
+    </div>
+{% endfor %}
+
+{% endblock content %}

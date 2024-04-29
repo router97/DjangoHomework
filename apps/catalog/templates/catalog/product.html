@@ -3,41 +3,82 @@
 {% block title %}{{ product.name }}{% endblock %}
 
 {% block content %}
+
+<style>
+    .no-margin {
+        margin: 0 !important;
+    }
+</style>
+
 <div class="container mt-5">
     <div class="row">
         
         <!-- Product Image -->
         <div class="col-md-6">
-            {% if product.image %}
-                <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
-            {% else %}
-                <img src='https://via.placeholder.com/500' class='img-fluid' alt='{{ product.name }}'>
-            {% endif %}
+            <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/500{% endif %}" class="img-fluid rounded" alt="{{ product.name }}">
         </div>
 
         <!-- Product Details -->
         <div class="col-md-6">
-            <div class="card">
+            <div class="card text-white bg-dark mb-3">
                 <div class="card-body">
                     <h2 class="card-title fw-bold">{{ product.name }}</h2>
-                    <h5 class="card-subtitle mb-3">Price: <span class="text-success">{{ product.price }}</span> UAH</h5>
-                    <p class="card-text">Availability: 
-                        {% if product.quantity %}
-                        {% if product.quantity >= 5 %}
-                            <span class="text-success">In Stock</span>
-                        {% else %}
-                            <span class="text-warning">Low Stock</span>
-                        {% endif %}
-                        {% else %}
-                            <span class="text-danger">Out of Stock</span>
-                        {% endif %}
-                    </p>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="bg-dark row align-items-center">
+                        <div class="col-3 d-flex flex-column align-items-start justify-content-center">
+                            <!-- Price -->
+                            <h5 class="mb-2"><span class="text-success">{{ product.price }} ₴</span></h5>
+                    
+                            <!-- Availability -->
+                            <p class="card-text mb-0"> 
+                                {% if product.quantity %}
+                                    {% if product.quantity >= 5 %}
+                                        <span class="text-success">In Stock</span>
+                                    {% else %}
+                                        <span class="text-warning">Low Stock</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-danger">Out of Stock</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col d-flex align-items-center">
+                            
+                            <!-- Add to Cart -->
+                            {% if product.quantity %}
+                            {% if in_cart %}
+                            <form action="{% url 'order:add_to_cart' %}" method="get">
+                                {% csrf_token %}
+                                <input type="hidden" name="product" value="{{ product.id }}">
+                                <div class="input-group mb-3">
+                                    <input type="number" min="1" step="1" max="{{ product.quantity }}" value="1" class="form-control" name="quantity">
+                                    <button class="btn btn-success" type="submit" id="button-addon1"><i class="fas fa-shopping-cart"></i> Add to Cart</button>
+                                </div>
+                            </form>
+                            {% else %}
+                                <div class="alert alert-info">Already In Cart.</div>
+                            {% endif %}
+                            {% else %}
+                                <div class="alert alert-warning">No Products Available</div>
+                            {% endif %}
+                            
+                            <!-- Add to Cart -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="card">
+                <div class="card-body">
                     <p class="card-text mb-4">{{ product.description }}</p>
-                    <button type="button" class="btn btn-primary" disabled>Add to Cart</button>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 {% endblock %}

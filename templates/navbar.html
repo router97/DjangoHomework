@@ -5,8 +5,8 @@
     <div class="container">
 
         <!-- Logo -->
-        <a class="navbar-brand" href="{% url 'blog:index' %}">
-            <img src="{% static 'favicon.svg' %}" alt="Logo" height=50 width=50>
+        <a class="navbar-brand" href="{% url 'main:index' %}">
+            <img src="{% static 'favicon/favicon-32x32.png' %}">
             DjangoHomework
         </a>
 
@@ -19,14 +19,17 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href={% url "main:about" %}><i class="bi bi-info-circle"></i> About</a>
+                    <a class="nav-link" href="{% url 'main:about' %}"><i class="bi bi-info-circle"></i> About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href={% url "catalog:index" %}><i class="bi bi-info-circle"></i> Catalog</a>
+                    <a class="nav-link" href="{% url 'catalog:index' %}"><i class="bi bi-collection"></i> Catalog</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'quiz:index' %}"><i class="bi bi-clipboard"></i> Quizzes</a>
                 </li>
                 {% if request.user.is_superuser %}
                     <li class="nav-item">
-                        <a class="nav-link" href={% url "admin:index" %}><i class="bi bi-gear"></i> Admin</a>
+                        <a class="nav-link" href="{% url 'admin:index' %}"><i class="bi bi-gear"></i> Admin</a>
                     </li>
                 {% endif %}
             </ul>
@@ -39,9 +42,11 @@
                             {{ request.user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{% url "members:profile" request.user.username %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'members:profile' request.user.username %}"><i class="bi bi-person-circle"></i> Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="{% url "members:logout" %}">Logout</a></li>
+                            <li><a class="dropdown-item" href="{% url 'order:cart' %}"><i class="bi bi-basket"></i> Cart</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'members:logout' %}"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -51,10 +56,10 @@
             {% else %}
                 <ul class="navbar-nav mb-lg-0">
                     <li class="nav-item">
-                        <a class="btn btn-outline-primary" href={% url "members:login" %}><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                        <a class="btn btn-outline-light" style="border: none;" href={% url "members:login" %}>Sign In</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-outline-success" href={% url "members:register" %}><i class="bi bi-person-plus"></i> Register</a>
+                        <a class="btn btn-outline-light" href={% url "members:register" %}>Sign Up</a>
                     </li>
                 </ul>
             {% endif %}

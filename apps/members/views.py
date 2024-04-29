@@ -18,11 +18,11 @@ class LoginView(View):
         user = authenticate(request, username = username, password = password)
         
         if not user:
-            messages.error(request, 'Login failed')
+            messages.error(request, 'Login failed.')
             return redirect('members:login')
         
         login(request, user)
-        messages.success(request, 'Logged in successfully')
+        messages.info(request, f'Welcome Back, {username}!')
         return redirect('blog:index')
 
 class RegisterView(View):
@@ -40,7 +40,7 @@ class RegisterView(View):
         
         user = form.save()
         login(request, user)
-        
+        messages.info(request, f'Welcome, {form.cleaned_data['username']}!')
         return redirect('blog:index')
 
 class ProfileView(View):

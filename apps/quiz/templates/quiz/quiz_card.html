@@ -1,0 +1,76 @@
+<style>
+    .quiz-card {
+        position: relative;
+        transition: height 0.5s ease-in-out;
+    }
+    .stripe {
+        position: absolute;
+        transition: width 0.3s ease-out,
+                    opacity 0.1s;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 4px;
+        opacity: 0.5;
+    }
+    .quiz-card:hover .stripe {
+        width: 100%; 
+    }
+    .quiz-card:active .stripe {
+        opacity: 0.7;
+    }
+
+    .quiz-title {
+        transition: margin-left 0.5s ease-in-out;
+    }
+    .quiz-card:hover .quiz-title {
+        margin-left: 30px;
+    }
+
+    .quiz-arrow {
+        transition: opacity 0.5s, margin-left 0.4s;
+        opacity: 0;
+    }
+    .quiz-card:hover .quiz-arrow {
+        opacity: 0.8;
+        margin-left: 5px;
+    }
+    .quiz-card:active .quiz-arrow {
+        opacity: 0.9;
+        margin-left: 10px;
+    }
+
+    .quiz-description {
+        transition: opacity 0.5s, margin-left 0.55s ease-in-out, height 0.3s ease-out;
+        opacity: 0;
+        height: 0;
+    }
+    .quiz-card:hover .quiz-description {
+        opacity: 1;
+        margin-left: 30px;
+        height: 25px;
+    }
+</style>
+
+
+<a href="{{ quiz.get_absolute_url }}" class="text-decoration-none">
+    <div class="card quiz-card border-0 mb-3 shadow-sm">
+        <div class="stripe {% if quiz.get_complexity == 1 %}bg-primary{% elif quiz.get_complexity == 2 %}bg-warning{% else %}bg-danger{% endif %}"></div>
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <h3 class="card-title mb-0 quiz-title">{{ quiz.name }} <i class="bi bi-arrow-right-circle quiz-arrow"></i></h3>
+                    <p class="card-description mb-0 quiz-description">
+                        {% if quiz.short_description %}
+                            {{ quiz.short_description }}
+                        {% elif quiz.description %}
+                            {{ quiz.description|truncatechars:100 }}
+                        {% else %}
+                            No Description Provided.
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</a>

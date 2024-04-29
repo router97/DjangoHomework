@@ -1,0 +1,78 @@
+<tr>
+    <!-- COUNTER -->
+    <th scope="row">{{ forloop.counter }}</th>
+    <!-- COUNTER -->
+
+    <!-- PRODUCT DETAILS -->
+    <td>
+        <a href='{{ cart_product.product.get_absolute_url }}' class="text-decoration-none">
+            <div class="mb-3 text-white">
+                <div class="row g-0 align-items-center">
+
+                    <!-- Product Image -->
+                    <div class="col-md-4">
+                        {% if cart_product.product.image %}
+                            <img src='{{ cart_product.product.image.url }}' class='img-fluid rounded-start' alt='{{ cart_product.product.name }}'>
+                        {% else %}
+                            <img src='https://via.placeholder.com/150' class='img-fluid rounded-start' alt='{{ cart_product.product.name }}'>
+                        {% endif %}
+                    </div>
+                    <!-- Product Image -->
+
+                    <div class="col-md-8">
+                        <div class="card-body">
+
+                            <!-- Product Name -->
+                            <h6>{{ cart_product.product.name }}</h6>
+                            <!-- Product Name -->
+
+                            <!-- Product Category Name -->
+                            <p>{{ cart_product.product.main_category.name }}</p>
+                            <!-- Product Category Name -->
+
+                            <!-- Remove Product From Cart Form -->
+                            <form method="POST" action="{% url "order:remove_from_cart" cart_product.product.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-light" type="submit">
+                                    Remove
+                                </button>
+                            </form>
+                            <!-- Remove Product From Cart Form -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </td>
+    <!-- PRODUCT DETAILS -->
+
+    <!-- QUANTITY -->
+    <td>
+        <form method="POST" action="{% url "order:change_quantity" cart_product.product.id %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <input name="change_quantity{{ cart_product.product.id }}" type="number" class="form-control text-center" value="{{ cart_product.quantity }}" min="1">
+                <button class="btn btn-outline-light" type="submit">
+                    <i class="bi bi-check2"></i>
+                </button>
+            </div>
+            
+        </form>
+    </td>
+    <!-- QUANTITY -->
+
+    <!-- PRICE -->
+    <td>
+        ₴ {{ cart_product.product.price }}
+    </td>
+    <!-- PRICE -->
+
+    <!-- TOTAL -->
+    <td>
+        ₴ {{ cart_product.get_total_price }}
+    </td>
+    <!-- TOTAL -->
+
+</tr>
+
