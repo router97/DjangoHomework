@@ -48,7 +48,7 @@ class Cart(models.Model):
     
     def __str__(self) -> str:
         return f"{self.user}'s cart"
-    
+
 class CartProduct(models.Model):
     """
     Represents a product in a shopping cart.
@@ -88,4 +88,4 @@ class CartProduct(models.Model):
         return self.product.price * self.quantity
     
     def __str__(self) -> str:
-        f'{self.cart} -> {self.product.name}'
+        return f'{self.cart.user.username} -> {self.product.name}'

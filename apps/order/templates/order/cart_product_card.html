@@ -49,9 +49,16 @@
 
     <!-- QUANTITY -->
     <td>
-        <div class="input-group">
-            <input type="number" class="form-control text-center" value="{{ cart_product.quantity }}" min="1">
-        </div>
+        <form method="POST" action="{% url "order:change_quantity" cart_product.product.id %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <input name="change_quantity{{ cart_product.product.id }}" type="number" class="form-control text-center" value="{{ cart_product.quantity }}" min="1">
+                <button class="btn btn-outline-light" type="submit">
+                    <i class="bi bi-check2"></i>
+                </button>
+            </div>
+            
+        </form>
     </td>
     <!-- QUANTITY -->
 

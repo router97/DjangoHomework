@@ -1,9 +1,8 @@
 from typing import Any
-from uuid import UUID
 
 from django import forms
 
-from .models import Cart, CartProduct
+from .models import CartProduct
 from ..catalog.models import Product
 
 
@@ -13,10 +12,8 @@ class CartAddProductForm(forms.ModelForm):
         fields = ('cart', 'product', 'quantity')
         
     def clean(self) -> dict[str, Any]:
-        cleaned_data = super().clean()
-        print(f'CLEANED DATA: {cleaned_data}')
-        product = cleaned_data.get('product')
-        print(f'TYPE OF PRODUCT FROM FORM "{type(product)}"')
+        cleaned_data: dict[str, Any] = super().clean()
+        product: Product = cleaned_data.get('product')
         quantity: int = cleaned_data.get('quantity')
         
         if product.quantity < quantity:
