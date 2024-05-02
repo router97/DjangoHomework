@@ -5,79 +5,112 @@
 {% block content %}
 
 <div class="container" id="profile-container">
-
-    <!-- Profile -->
     <div class="mt-4 rounded-3 bg-body-tertiary shadow p-4">
-        <h1 class="mb-4">Profile</h1>
-        <form method="POST" id="profile-form" action="" enctype="multipart/form-data">
-            {% csrf_token %}
-            <fieldset {% if user_context != request.user %}disabled{% endif %}>
-                <div class="mb-2">
-                    <label class="form-label" for="username">Username</label>
-                    <input class="form-control" id="username" name="username" type="text" value="{{ user_context.username }}" placeholder="Username">
-                </div>
-
-                <div class="mb-2">
-                    <label class="form-label" for="first_name">First name</label>
-                    <input class="form-control" id="first_name" name="first_name" type="text" value="{{ user_context.first_name }}" placeholder="First Name">
-                </div>
-                
-                <div class="mb-2">
-                    <label class="form-label" for="last_name">Last Name</label>
-                    <input class="form-control" id="last_name" name="last_name" type="text" value="{{ user_context.last_name }}" placeholder="Last Name">
-                </div>
-                
-                <div class="mb-2">
-                    <label class="form-label" for="email">Email</label>
-                    <input class="form-control" id="email" name="email" type="email" value="{{ user_context.email }}" placeholder="Email">
-                </div>
-
-                <br>
-                
-                <div class="d-grid gap-2">
-                    <button class="btn btn-primary" type="submit">Update</button>
-                </div>
-            </fieldset>
-        </form>
+        <ul class="nav nav-pills" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="true">Profile</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-articles-tab" data-bs-toggle="pill" data-bs-target="#pills-articles" type="button" role="tab" aria-controls="pills-articles" aria-selected="false">Articles</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pills-quizzes-tab" data-bs-toggle="pill" data-bs-target="#pills-quizzes" type="button" role="tab" aria-controls="pills-quizzes" aria-selected="false">Quizzes</button>
+            </li>
+        </ul>
     </div>
 
-    <!-- Articles -->
-    <div class="mt-4 rounded-3 bg-body-tertiary p-4">
-        <h1>Articles</h1>
-        <p>
-            <strong>Amount:</strong> <span class="badge bg-secondary">{{ user_context.articles.all|length }}</span>
-        </p>
+    <div class="tab-content" id="pills-tabContent">
 
-        <div class="row g-4" id="articles">
-
-            <!-- Cards without edit/delete buttons -->
-            {% if request.user != user_context %}
-                {% for article in user_context.articles.all %}
-                    <div class="col-4">
-                        {% include "article_card.html" with article=article %}
-                    </div>
-                {% empty %}
-                    <p>No articles</p>
-                {% endfor %}
-            
-            <!-- Cards with edit/delete buttons -->
-            {% else %}
-                <form class="mb-4" id="add-article" action="{% url "blog:add-article" %}">
-                    <button class="btn btn-primary" type="submit"><i class="bi bi-envelope-plus"></i> Create article</button>
-                </form>
-                {% for article in user_context.articles.all %}
-                    <div class="col-4">
-                        <div class="d-flex justify-content-between">
-                            <a class="btn btn-danger flex-fill" href="{% url "blog:delete-article" article.id %}" type="submit">Delete</a>
-                            <a class="btn btn-warning flex-fill" href="{% url "blog:edit-article" article.id %}" type="submit">Edit</a>
+        <!-- Profile -->
+        <div class="tab-pane fade show active" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+            <div class="mt-4 rounded-3 bg-body-tertiary shadow p-4">
+                <h1 class="mb-4">Profile</h1>
+                <form method="POST" id="profile-form" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <fieldset {% if user_context != request.user %}disabled{% endif %}>
+                        <div class="mb-2">
+                            <label class="form-label" for="username">Username</label>
+                            <input class="form-control" id="username" name="username" type="text" value="{{ user_context.username }}" placeholder="Username">
                         </div>
-                        {% include "article_card.html" with article=article %}
-                    </div>     
-                {% empty %}
-                    <p>No articles</p>
-                {% endfor %}
-            {% endif %}
+                        <div class="mb-2">
+                            <label class="form-label" for="first_name">First name</label>
+                            <input class="form-control" id="first_name" name="first_name" type="text" value="{{ user_context.first_name }}" placeholder="First Name">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label" for="last_name">Last Name</label>
+                            <input class="form-control" id="last_name" name="last_name" type="text" value="{{ user_context.last_name }}" placeholder="Last Name">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label" for="email">Email</label>
+                            <input class="form-control" id="email" name="email" type="email" value="{{ user_context.email }}" placeholder="Email">
+                        </div>
+
+                        <br>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" type="submit">Update</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
         </div>
+        <!-- Profile -->
+
+        <!-- Articles -->
+        <div class="tab-pane fade" id="pills-articles" role="tabpanel" aria-labelledby="pills-articles-tab">
+            <div class="mt-4 rounded-3 bg-body-tertiary p-4">
+                <h1 class="mb-4">Articles</h1>
+
+                <div class="row g-4" id="articles">
+
+                    <!-- Cards without edit/delete buttons -->
+                    {% if request.user != user_context %}
+                        {% for article in user_context.articles.all %}
+                            <div class="col-4">
+                                {% include "article_card.html" with article=article %}
+                            </div>
+                        {% empty %}
+                            <p>No articles</p>
+                        {% endfor %}
+                    
+                    <!-- Cards with edit/delete buttons -->
+                    {% else %}
+                        <form class="mb-4" id="add-article" action="{% url "blog:add-article" %}">
+                            <button class="btn btn-primary" type="submit"><i class="bi bi-envelope-plus"></i> Create article</button>
+                        </form>
+                        {% for article in user_context.articles.all %}
+                            <div class="col-4">
+                                <div class="d-flex justify-content-between">
+                                    <a class="btn btn-danger flex-fill" href="{% url "blog:delete-article" article.id %}" type="submit">Delete</a>
+                                    <a class="btn btn-warning flex-fill" href="{% url "blog:edit-article" article.id %}" type="submit">Edit</a>
+                                </div>
+                                {% include "article_card.html" with article=article %}
+                            </div>     
+                        {% empty %}
+                            <p>No articles</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Articles -->
+
+        <!-- Articles -->
+        <div class="tab-pane fade" id="pills-quizzes" role="tabpanel" aria-labelledby="pills-quizzes-tab">
+            <div class="mt-4 rounded-3 bg-body-tertiary p-4">
+                <h1 class="mb-4">Quizzes</h1>
+                <div class="col" id="quizzes">
+                    {% for quiz in user_context.quizzes.all %}
+                        <div class="row">
+                            {% include "quiz/quiz_card.html" with quiz=quiz %}
+                        </div>
+                    {% empty %}
+                        <p>No quizzes</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- Articles -->
+
     </div>
 </div>
 

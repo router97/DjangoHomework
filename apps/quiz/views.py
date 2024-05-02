@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.models import User
 
 from .models import Topic, Quiz, ChoiceAnswer
+from .forms import CompletionForm
 
 
 class TopicListView(ListView):
@@ -17,7 +18,10 @@ class TopicListView(ListView):
     paginate_by = 6
     
     def get_queryset(self):
-        return Topic.objects.filter(parent=None)
+        queryset = Topic.objects.filter(parent=None)
+        for topic in queryset:
+            topic.completion = round(topic.get_topic_completion(self.request.user.id))
+        return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -48,6 +52,8 @@ class SubTopicListView(ListView):
         topic_slug = self.kwargs['slug']
         topic = get_object_or_404(Topic, slug=topic_slug)
         queryset = Topic.objects.filter(parent=topic)
+        for topic in queryset:
+            topic.completion = round(topic.get_topic_completion(self.request.user.id))
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -151,7 +157,15 @@ def submit_answer(request: HttpRequest, id: UUID) -> HttpResponse:
         'questions_result': questions_result,
     }
     
-    quiz.completions += 1
-    quiz.save(update_fields=['completions'])
+    completion_form = CompletionForm(
+        data={
+            'user': request.user, 
+            'quiz': quiz, 
+            'percentage': float(completion), 
+            'picked_answers': selected_all, 
+        }, 
+    )
+    if completion_form.is_valid():
+        completion_form.save()
     
     return render(request, 'quiz/result.html', context)

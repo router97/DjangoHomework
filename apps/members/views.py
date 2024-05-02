@@ -45,7 +45,7 @@ class RegisterView(View):
 
 class ProfileView(View):
     def get(self, request: HttpRequest, username: str) -> HttpResponse:
-        requested_user = get_object_or_404(User.objects.prefetch_related('articles'), username=username)
+        requested_user = get_object_or_404(User.objects.prefetch_related('articles', 'quizzes'), username=username)
         context = {'user_context': requested_user}
         return render(request, 'profile.html', context)
     

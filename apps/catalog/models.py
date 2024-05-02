@@ -84,49 +84,41 @@ class Product(models.Model):
         default=uuid.uuid4, 
         editable=False, 
     )
-    
     name = models.CharField(
         verbose_name='Name', 
         max_length=255, 
         help_text='Enter the name of the product.', 
     )
-    
     slug = models.SlugField(
         verbose_name='URL', 
         max_length=255, 
         unique=True, 
         help_text='A unique slug for the product.', 
     )
-    
     description = models.TextField(
         verbose_name='Description', 
         blank=True, 
         null=True, 
         help_text='Enter a description for the product.', 
     )
-    
     quantity = models.PositiveIntegerField(
         verbose_name='Quantity', 
         default=0, 
         help_text='Amount available', 
     )
-    
     price = models.DecimalField(
         verbose_name='Price', 
         max_digits=10, 
         decimal_places=2, 
     )
-    
     created_at = models.DateTimeField(
         verbose_name='Created at', 
         auto_now_add=True, 
     )
-    
     updated_at = models.DateTimeField(
         verbose_name='Updated at', 
         auto_now=True, 
     )
-    
     image = models.ImageField(
         verbose_name='Image', 
         upload_to='catalog/product/', 
@@ -134,7 +126,6 @@ class Product(models.Model):
         null=True, 
         help_text='Upload an image for the product.', 
     )
-    
     category = models.ManyToManyField(
         to=Catalog, 
         through='ProductCategory', 

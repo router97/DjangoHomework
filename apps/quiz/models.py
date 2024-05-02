@@ -3,11 +3,11 @@ import uuid
 from django.db import models
 from django.urls import reverse
 from django.db.models import QuerySet
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.safestring import SafeText, mark_safe
 from django.contrib.auth.models import User
 
 from mptt.models import MPTTModel, TreeForeignKey
-
 from PIL import Image
 
 
@@ -82,12 +82,6 @@ class Quiz(models.Model):
         verbose_name='Edited at', 
         auto_now=True, 
         help_text='The date and time when the quiz was last edited.', 
-    )
-    completions = models.PositiveIntegerField(
-        verbose_name='Completions Count', 
-        blank=True,
-        default=0,
-        help_text='Amount of times the quiz has been completed.'
     )
     
     class Meta:
@@ -259,7 +253,22 @@ class Topic(MPTTModel):
             img.thumbnail(max_size)
             img.save(self.image.path)
         super().save(*args, **kwargs)
+    
+    def get_topic_completion(self, user_id: int) -> float:
+        """Calculate a user's completion of the topic."""
+        descentants = self.get_descendants(include_self=True)
+        user_completions: QuerySet[Completion] = Completion.objects.filter(
+            user__id=user_id, 
+            quiz__topic__in=descentants, 
+        )
+        topic_quizzes_completed_count: int = user_completions.count()
+        total_topic_quizzes_count: int = Quiz.objects.filter(topic__in=descentants).count()
         
+        if total_topic_quizzes_count == 0:
+            return 0.0
+        
+        return (topic_quizzes_completed_count / total_topic_quizzes_count) * 100.0
+    
     def __str__(self) -> str:
         return self.name
 
@@ -349,3 +358,81 @@ class ChoiceAnswer(models.Model):
     
     def __str__(self) -> str:
         return f'{'Correct' if self.is_correct else 'Incorrect'} - {self.text}'
+
+class Completion(models.Model):
+    """
+    Represents a completion of a quiz.
+
+    Each completion has the user who made the completion, the quiz being completed and the time of the completion.
+    """
+    
+    user = models.ForeignKey(
+        to=User, 
+        on_delete=models.CASCADE,
+        related_name='quiz_completions',
+        verbose_name='User', 
+        help_text='The user who the completion belongs to.', 
+    )
+    quiz = models.ForeignKey(
+        to=Quiz, 
+        on_delete=models.CASCADE,
+        related_name='completions',
+        verbose_name='Quiz', 
+        help_text='The quiz being completed.', 
+    )
+    percentage = models.FloatField(
+        verbose_name='Percentage', 
+        help_text='Completion percentage.', 
+        validators=[MinValueValidator(0.0), MaxValueValidator(100.0)]
+    )
+    picked_answers = models.ManyToManyField(
+        to=ChoiceAnswer, 
+        through='PickedAnswer', 
+        related_name='completions', 
+        verbose_name='Picked Answers', 
+        help_text='Answers that user picked from quiz questions.', 
+    )
+    created_at = models.DateTimeField(
+        verbose_name='Created at', 
+        auto_now_add=True, 
+        help_text='The date and time when the completion was made.', 
+    )
+    
+    class Meta:
+        db_table_comment = 'Quiz completions.'
+        verbose_name = 'Completion'
+        verbose_name_plural = 'Completions'
+        ordering = ['quiz']
+        unique_together = ['user', 'quiz']
+    
+    def __str__(self):
+        return f'{self.user.username} completed {self.quiz.name} with {self.percentage}%'
+
+class PickedAnswer(models.Model):
+    """
+    Represents a picked answer in a completed quiz.
+
+    Each PickedAnswer has the completion it was picked in and the answer that was picked.
+    """
+    
+    completion = models.ForeignKey(
+        to=Completion, 
+        on_delete=models.CASCADE, 
+        verbose_name='Completion', 
+        help_text='The completion instance that this answer was picked in.', 
+    )
+    answer = models.ForeignKey(
+        to=ChoiceAnswer, 
+        on_delete=models.CASCADE, 
+        verbose_name='Answer', 
+        help_text='The answer that was picked.'
+    )
+    
+    class Meta:
+        db_table_comment = 'A picked answer in a completion.'
+        verbose_name = 'Picked answer'
+        verbose_name_plural = 'Picked answers'
+        ordering = ['completion']
+    
+    def __str__(self):
+        return f"{self.completion.user.username} picked {self.answer.text} and was {'correct' if self.answer.is_correct else 'incorrect'}"

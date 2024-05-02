@@ -1,9 +1,10 @@
 from django.contrib import admin
 
-from .models import Topic, Quiz, Question, ChoiceAnswer
+from .models import Topic, Quiz, Question, ChoiceAnswer, Completion
 
 from nested_admin import NestedTabularInline, NestedModelAdmin
 
+admin.site.register(Completion)
 
 class ChoiceAnswerInline(NestedTabularInline):
     model = ChoiceAnswer

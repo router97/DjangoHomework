@@ -17,7 +17,7 @@
     <div class="card topic-card">
         <img class="card-img" src="{% if topic.image %}{{ topic.image.url }}{% else %}https://image-placeholder.com/images/actual-size/450x300.png{% endif %}" alt="{{ topic.name }}">
         <div class="card-body text-center">
-            <h5 class="card-title">{{ topic.name }}</h5>
+            <h5 class="card-title">{{ topic.name }} {{ topic.completion }}</h5>
         </div>
     </div>
 </a>
