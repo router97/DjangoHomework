@@ -7,8 +7,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.safestring import SafeText, mark_safe
 from django.contrib.auth.models import User
 
-from mptt.models import MPTTModel, TreeForeignKey
 from PIL import Image
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 class CompletionPercentageError(Exception):
@@ -33,7 +33,6 @@ class Quiz(models.Model):
         on_delete=models.CASCADE,
         related_name='quizzes', 
         verbose_name='Topic', 
-        null=True, 
         help_text='Choose the topic of the quiz.', 
     )
     author = models.ForeignKey(
