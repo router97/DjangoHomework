@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     
     "debug_toolbar",
     "nested_admin",
+    'mptt', 
     
     'apps.main',
     'apps.blog',

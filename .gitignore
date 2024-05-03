@@ -3,3 +3,4 @@ __pycache__
 media
 static/admin
 static/debug_toolbar
+static/nested_admin
