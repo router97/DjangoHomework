@@ -107,7 +107,12 @@ class QuizzesByTopicListView(ListView):
         topics_amount = topics.count()
         
         context['topic'] = topic
-        context['topics'] = sample(list(topics), 6 if 6 < topics_amount else topics_amount)
+        topics_random = sample(list(topics), 6 if 6 < topics_amount else topics_amount)
+        
+        for topic_random in topics_random:
+            topic_random.completion = round(topic_random.get_topic_completion(self.request.user.id))
+        
+        context['topics'] = topics_random
         
         return context
     

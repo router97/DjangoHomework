@@ -268,6 +268,11 @@ class Topic(MPTTModel):
         
         return (topic_quizzes_completed_count / total_topic_quizzes_count) * 100.0
     
+    def get_amount_of_quizzes(self) -> int:
+        descentants: QuerySet[Topic] = self.get_descendants(include_self=True)
+        total_topic_quizzes_count: int = Quiz.objects.filter(topic__in=descentants).count()
+        return total_topic_quizzes_count
+    
     def __str__(self) -> str:
         return self.name
 
