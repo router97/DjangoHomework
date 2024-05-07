@@ -7,7 +7,7 @@
 <!-- Topics -->
 {% if object_list %}
 <div class="mx-4 mt-4 rounded-3 bg-body-dark p-2">
-    <div class="card rounded-3 bg-body-secondary p-2"> 
+    <div class="card rounded-3 {% if completion_topics %}bg-success{% else %}bg-body-secondary{% endif %} p-2"> 
         <div class="row mt-3 d-flex justify-content-around">
             <h3 class="card-title display-3 text-center">{{ topic.name }} Topics <i class="bi bi-tags"></i></h3>
             {% for topic in object_list %}

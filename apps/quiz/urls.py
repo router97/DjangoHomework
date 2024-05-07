@@ -3,7 +3,7 @@ from django.urls import path
 from . import views
 
 
-app_name = 'catalog'
+app_name = 'apps.quiz'
 
 urlpatterns = [
     path('', views.TopicListView.as_view(), name='index'), 

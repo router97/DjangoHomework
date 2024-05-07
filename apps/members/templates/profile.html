@@ -94,23 +94,59 @@
         </div>
         <!-- Articles -->
 
-        <!-- Articles -->
+        <!-- Quizzes -->
         <div class="tab-pane fade" id="pills-quizzes" role="tabpanel" aria-labelledby="pills-quizzes-tab">
             <div class="mt-4 rounded-3 bg-body-tertiary p-4">
-                <h1 class="mb-4">Quizzes</h1>
-                <div class="col" id="quizzes">
-                    {% for quiz in user_context.quizzes.all %}
-                        <div class="row">
-                            {% include "quiz/quiz_card.html" with quiz=quiz %}
-                        </div>
-                    {% empty %}
-                        <p>No quizzes</p>
-                    {% endfor %}
+
+                <!-- Quizzes Navigations -->
+                <div class="mt-4 rounded-3 bg-body-tertiary shadow p-4">
+                    <ul class="nav nav-pills" id="pills-tab-quizzes" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="pills-quizzes-topics-tab" data-bs-toggle="pill" data-bs-target="#pills-quizzes-topics" type="button" role="tab" aria-controls="pills-quizzes-topics" aria-selected="true">Topics</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pills-quizzes-created-tab" data-bs-toggle="pill" data-bs-target="#pills-quizzes-created" type="button" role="tab" aria-controls="pills-quizzes-created" aria-selected="false">Created</button>
+                        </li>
+                    </ul>
                 </div>
+                <!-- Quizzes Navigations -->
+
+                <!-- Quizzes Tabs Content -->
+                <div class="tab-content" id="pills-tabContent-quizzes">
+
+                    <!-- Quizzes Topics Tab Pane -->
+                    <div class="tab-pane fade show active" id="pills-quizzes-topics" role="tabpanel" aria-labelledby="pills-quizzes-topics-tab">
+                        <h1 class="mb-4">Topics</h1>
+                        <div class="row mt-3 d-flex justify-content-left">
+                            {% for topic in quiz_topics_in_progress %}
+                                <div class="col-md-2">
+                                    {% include "quiz/topic_card.html" with topic=topic %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- Quizzes Topics Tab Pane -->
+
+                    <!-- Quizzes Created Tab Pane -->
+                    <div class="tab-pane fade" id="pills-quizzes-created" role="tabpanel" aria-labelledby="pills-quizzes-created-tab">
+                        <h1 class="mb-4">Created</h1>
+                        <div class="col">
+                            {% for quiz in user_context.quizzes.all %}
+                                <div class="row">
+                                    {% include "quiz/quiz_card.html" with quiz=quiz %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- Quizzes Created Tab Pane -->
+
+                </div>
+                <!-- Quizzes Tabs Content -->
+
+                
             </div>
         </div>
-        <!-- Articles -->
-
+        <!-- Quizzes -->
     </div>
 </div>
 

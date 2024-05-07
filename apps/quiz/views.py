@@ -21,14 +21,20 @@ class TopicListView(ListView):
         queryset = Topic.objects.filter(parent=None)
         for topic in queryset:
             topic.completion = round(topic.get_topic_completion(self.request.user.id))
+            topic.empty = bool(not topic.get_amount_of_quizzes())
         return queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         quizzes = Quiz.objects.all()
+        for quiz in quizzes:
+            quiz.completed, quiz.completion_percent = quiz.is_completed_by(self.request.user.id)
         quizzes_amount = quizzes.count()
         creators_ids = quizzes.values('author').distinct()
         creators = User.objects.filter(id__in=creators_ids)
+        
+        if list(self.object_list) == list(topic for topic in self.object_list if topic.completion == 100):
+            context['completion_topics'] = True
         
         context['quizzes'] = sample(list(quizzes), 4 if 4 < quizzes_amount else quizzes_amount)
         context['quizzes_latest'] = quizzes.order_by('-created_at')[:6]
@@ -54,6 +60,7 @@ class SubTopicListView(ListView):
         queryset = Topic.objects.filter(parent=topic)
         for topic in queryset:
             topic.completion = round(topic.get_topic_completion(self.request.user.id))
+            topic.empty = bool(not topic.get_amount_of_quizzes())
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -64,6 +71,11 @@ class SubTopicListView(ListView):
         
         descendants = topic.get_descendants(include_self=True)
         quizzes = Quiz.objects.filter(topic__in=descendants)
+        for quiz in quizzes:
+            quiz.completed, quiz.completion_percent = quiz.is_completed_by(self.request.user.id)
+        
+        if list(self.object_list) == list(topic for topic in self.object_list if topic.completion == 100):
+            context['completion_topics'] = True
         
         quizzes_amount = quizzes.count()
         creators_ids = quizzes.values('author').distinct()
@@ -94,7 +106,8 @@ class QuizzesByTopicListView(ListView):
         
         descendants = topic.get_descendants(include_self=True)
         queryset = Quiz.objects.filter(topic__in=descendants)
-        
+        for quiz in queryset:
+            quiz.completed, quiz.completion_percent = quiz.is_completed_by(self.request.user.id)
         return queryset
     
     def get_context_data(self, **kwargs):

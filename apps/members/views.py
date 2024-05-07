@@ -4,8 +4,10 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 from django.contrib.auth.models import User
+from django.db.models import QuerySet
 
 from .forms import RegisterForm, ProfileForm
+from ..quiz.models import Topic
 
 class LoginView(View):
     def get(self, request: HttpRequest) -> HttpResponse:
@@ -45,13 +47,26 @@ class RegisterView(View):
 
 class ProfileView(View):
     def get(self, request: HttpRequest, username: str) -> HttpResponse:
-        requested_user = get_object_or_404(User.objects.prefetch_related('articles', 'quizzes'), username=username)
-        context = {'user_context': requested_user}
+        requested_user: User = get_object_or_404(User.objects, username=username)
+        all_topics: QuerySet[Topic] = Topic.objects.filter()
+        
+        topics_with_completions = []
+        for topic in all_topics:
+            completion = round(topic.get_topic_completion(requested_user.id))
+            
+            if completion:
+                topic.completion = completion
+                topics_with_completions.append(topic)
+        
+        
+        context = {
+            'user_context': requested_user, 
+            'quiz_topics_in_progress': topics_with_completions, 
+        }
         return render(request, 'profile.html', context)
     
     def post(self, request: HttpRequest, username: str) -> HttpResponse | HttpResponseRedirect:
-        requested_user = get_object_or_404(User.objects.prefetch_related('articles'), username=username)
-        context = {'user_context': requested_user}
+        requested_user = get_object_or_404(User, username=username)
         
         if request.user != requested_user:
             return
@@ -63,7 +78,6 @@ class ProfileView(View):
             form.save()
         else:
             messages.error(request, "Failed to update profile")
-            return render(request, 'profile.html', context)
 
         return redirect('members:profile', username=requested_user.username)
 

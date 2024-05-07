@@ -1,4 +1,5 @@
 import uuid
+import os
 
 from django.db import models
 from django.urls import reverse
@@ -6,10 +7,20 @@ from django.db.models import QuerySet
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.safestring import SafeText, mark_safe
 from django.contrib.auth.models import User
+from django.template.defaultfilters import slugify
 
 from PIL import Image
 from mptt.models import MPTTModel, TreeForeignKey
 
+
+def generate_image_filename(instance: 'Topic', filename: str) -> str:
+    """Generate a unique filename for the image."""
+    ext = filename.split('.')[-1]
+    if instance.slug:
+        filename = f'{instance.slug}.{ext}'
+    else:
+        filename = f'{uuid.uuid4().hex}.{ext}'
+    return f'quiz/topic/{filename}'
 
 class CompletionPercentageError(Exception):
     """Raise for errors in calculating completion percentage of a quiz."""
@@ -92,6 +103,13 @@ class Quiz(models.Model):
         """Returns the URL of the quiz."""
         return reverse('quiz:quiz', kwargs={'topic_slug': self.topic.slug, 'slug': self.slug})
     
+    def is_completed_by(self, user_id: int) -> tuple[bool, float]:
+        """Check if a user completed the quiz and return completion status and percentage."""
+        completion = Completion.objects.filter(quiz=self, user=user_id).first()
+        if completion:
+            return True, completion.percentage
+        return False, 0.0
+    
     #TODO: Update algorithm to calculate with complexity weights (value is bigger if the complexity is bigger)
     def get_percentage_value_for_complexity(self) -> dict[str, float]:
         """Returns a dictionary of percentage value of a question of each complexity.
@@ -162,6 +180,10 @@ class Quiz(models.Model):
         total_complexity = sum(int(complexity) for complexity in questions.values_list('complexity', flat=True))
         return round(total_complexity / questions_amount)
 
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+    
     def __str__(self) -> str:
         return self.name
     
@@ -196,7 +218,7 @@ class Topic(MPTTModel):
     )
     image = models.ImageField(
         verbose_name='Image', 
-        upload_to='quiz/topic/', 
+        upload_to=generate_image_filename, 
         blank=True, 
         null=True, 
         help_text='Upload an image for the category.', 
@@ -245,13 +267,28 @@ class Topic(MPTTModel):
             return Topic.objects.filter(parent__isnull=True).exclude(pk=self.pk)
     
     def save(self, *args, **kwargs) -> None:
-        if self.image:
-            super().save(*args, **kwargs)
-            img = Image.open(self.image.path)
-            max_size = (450, 300)
-            img.thumbnail(max_size)
-            img.save(self.image.path)
+        self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+        
+        if self.image:
+            try:
+                target_size = (300, 300)
+                img = Image.open(self.image.path)
+                img.thumbnail(target_size)
+                thumbnail_size = img.size
+                new_img = Image.new("RGBA", target_size, (52, 58, 64))
+                left = (target_size[0] - thumbnail_size[0]) // 2
+                top = (target_size[1] - thumbnail_size[1]) // 2
+                new_img.paste(img, (left, top))
+                new_img.save(self.image.path, 'PNG')
+            except Exception as e:
+                print(f"Error processing image: {e}")
+
+    def delete(self, *args, **kwargs) -> None:
+        if self.image:
+            if os.path.isfile(self.image.path):
+                os.remove(self.image.path)
+        super().delete(*args, **kwargs)
     
     def get_topic_completion(self, user_id: int) -> float:
         """Calculate a user's completion of the topic."""

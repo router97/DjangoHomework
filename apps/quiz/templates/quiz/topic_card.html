@@ -1,3 +1,5 @@
+{% load quiz_filters %}
+
 <style>
     .topic-card {
         transition: transform 0.2s, box-shadow 0.2s, filter 0.05s;
@@ -11,18 +13,35 @@
         filter: brightness(80%);
         transform: scale(0.99);
     }
+
+    .topic-card-disabled {
+        filter: brightness(80%);
+    }
 </style>
 
+{% if not topic.empty %}
 <a href="{{ topic.get_absolute_url }}" class="text-decoration-none">
-    <div class="card topic-card">
-        <img class="card-img" src="{% if topic.image %}{{ topic.image.url }}{% else %}https://image-placeholder.com/images/actual-size/450x300.png{% endif %}" alt="{{ topic.name }}">
+{% endif %}
+    <div class="card {% if topic.empty %}topic-card-disabled{% else %}topic-card{% endif %}">
+
+        {% if topic.image.url and topic.image.path|file_exists %}
+            <img class="card-img" src="{{ topic.image.url }}" alt="{{ topic.name }}">
+        {% else %}
+            <img class="card-img" src="https://fakeimg.pl/300x300/212529/ffffff?text=?&font=bebas" alt="{{ topic.name }}">
+        {% endif %}
 
         <div class="card-body text-center {% if topic.completion == 100 %}bg-success{% elif topic.completion >= 1 %}bg-warning text-black{% endif %}">
             <h5 class="card-title">{{ topic.name }}</h5>
+            {% if not topic.empty %}
             <div class="progress">
                 <div class="progress-bar {% if topic.completion > 0 and topic.completion != 100 %}progress-bar-striped progress-bar-animated{% endif %}" role="progressbar" style="width: {{ topic.completion }}%" aria-valuenow="{{ topic.completion }}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             {{ topic.completion }}%
+            {% else %}
+                <h3><i class="bi bi-exclamation-triangle"></i></h3>
+            {% endif %}
         </div>
     </div>
+{% if not topic.empty %}
 </a>
+{% endif %}
